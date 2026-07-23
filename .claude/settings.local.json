@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run:*)",
+      "Bash(cd:*)",
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx vite:*)",
+      "Bash(npx supabase:*)",
+      "Bash(curl -s -X POST \"https://fvuwjnwlnkrkimfueuku.supabase.co/auth/v1/admin/users\" -H \"apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2dXdqbndsbmtya2ltZnVldWt1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NDgwOTA5MSwiZXhwIjoyMTAwMzg1MDkxfQ.P_i3kK0H93zC7HmkmjFFJ52u3uUrM1ukHMFbf0OKB1U\" -H \"Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2dXdqbndsbmtya2ltZnVldWt1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NDgwOTA5MSwiZXhwIjoyMTAwMzg1MDkxfQ.P_i3kK0H93zC7HmkmjFFJ52u3uUrM1ukHMFbf0OKB1U\" -H \"Content-Type: application/json\" -d '{:*)"
+    ]
+  }
+}
