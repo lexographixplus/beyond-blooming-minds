@@ -46,32 +46,38 @@ export default function BlogPreview() {
             </div>
           ) : (
             featured.map((post, index) => (
-              <motion.article
-                key={post.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="group rounded-2xl border border-gray-100 bg-white shadow-sm hover:border-primary-200 hover:shadow-md transition-all duration-300"
-              >
-                <div className="p-6">
-                  {post.image_url && (
-                    <div className="mb-5 overflow-hidden rounded-xl">
-                      <img src={post.image_url} alt={post.title} className="h-44 w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+              <Link key={post.id} to={`/blog/${post.slug || post.id}`}>
+                <motion.article
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className="group h-full rounded-2xl border border-gray-100 bg-white shadow-sm hover:border-primary-200 hover:shadow-md transition-all duration-300"
+                >
+                  <div className="p-6">
+                    {post.image_url && (
+                      <div className="mb-5 overflow-hidden rounded-xl">
+                        <img src={post.image_url} alt={post.title} className="h-44 w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                      </div>
+                    )}
+                    <p className="text-xs font-semibold uppercase tracking-[0.15em] text-primary-600">
+                      {post.category || 'Reflection'}
+                    </p>
+                    <h3 className="mt-3 text-lg font-bold text-gray-900 group-hover:text-primary-700 transition-colors">{post.title}</h3>
+                    <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-gray-500">
+                      {post.excerpt || post.content}
+                    </p>
+                    <div className="mt-4 flex items-center justify-between">
+                      <p className="text-xs text-gray-400">
+                        {post.created_at ? new Date(post.created_at).toLocaleDateString() : 'Draft'}
+                      </p>
+                      <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary-600 group-hover:gap-2 transition-all">
+                        Read <ArrowRight size={12} />
+                      </span>
                     </div>
-                  )}
-                  <p className="text-xs font-semibold uppercase tracking-[0.15em] text-primary-600">
-                    {post.category || 'Reflection'}
-                  </p>
-                  <h3 className="mt-3 text-lg font-bold text-gray-900">{post.title}</h3>
-                  <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-gray-500">
-                    {post.excerpt || post.content}
-                  </p>
-                  <p className="mt-4 text-xs text-gray-400">
-                    {post.created_at ? new Date(post.created_at).toLocaleDateString() : 'Draft'}
-                  </p>
-                </div>
-              </motion.article>
+                  </div>
+                </motion.article>
+              </Link>
             ))
           )}
         </div>

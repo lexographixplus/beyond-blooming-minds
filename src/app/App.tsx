@@ -17,6 +17,7 @@ import { assets } from '../lib/siteContent';
 const Admin = lazy(() => import('../pages/Admin'));
 const BooksPage = lazy(() => import('../pages/Books'));
 const BlogPage = lazy(() => import('../pages/Blog'));
+const BlogPostPage = lazy(() => import('../pages/BlogPost'));
 
 function PublicHome() {
   return (
@@ -60,6 +61,7 @@ export default function App() {
             <Route path="/" element={<PublicHome />} />
             <Route path="/books" element={<BooksPage />} />
             <Route path="/blog" element={<BlogPage />} />
+            <Route path="/blog/:slug" element={<BlogPostPage />} />
             <Route path="/admin" element={<Admin />} />
           </Routes>
         </Suspense>

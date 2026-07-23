@@ -26,6 +26,7 @@ export type Book = {
 export type BlogPost = {
   id: string;
   title: string;
+  slug?: string;
   category?: string;
   excerpt?: string;
   content?: string;

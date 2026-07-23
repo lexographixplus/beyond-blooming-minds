@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
 import {
   BookOpen,
   Check,
@@ -58,6 +60,7 @@ type BookFormState = {
 
 type BlogFormState = {
   title: string;
+  slug: string;
   category: string;
   excerpt: string;
   content: string;
@@ -79,11 +82,21 @@ const emptyBookForm: BookFormState = {
 
 const emptyBlogForm: BlogFormState = {
   title: '',
+  slug: '',
   category: 'Reflection',
   excerpt: '',
   content: '',
   image_url: '',
 };
+
+function toSlug(title: string) {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
+}
 
 const formatTimestamp = (value: string | undefined | null) => {
   if (!value) return 'Just now';
@@ -329,8 +342,28 @@ export default function Admin() {
 
   /* ── Blog handlers ── */
   const handleBlogChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setBlogForm((previous) => ({ ...previous, [event.target.name]: event.target.value }));
+    const { name, value } = event.target;
+    setBlogForm((previous) => ({
+      ...previous,
+      [name]: value,
+      ...(name === 'title' && !editingBlogId ? { slug: toSlug(value) } : {}),
+    }));
   };
+
+  const handleBlogContentChange = (value: string) => {
+    setBlogForm((previous) => ({ ...previous, content: value }));
+  };
+
+  const quillModules = useMemo(() => ({
+    toolbar: [
+      [{ header: [2, 3, false] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      ['blockquote'],
+      [{ list: 'ordered' }, { list: 'bullet' }],
+      ['link', 'image'],
+      ['clean'],
+    ],
+  }), []);
 
   const uploadBlogImage = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -355,6 +388,7 @@ export default function Admin() {
 
     const payload = {
       title: blogForm.title,
+      slug: blogForm.slug || toSlug(blogForm.title),
       category: blogForm.category,
       excerpt: blogForm.excerpt,
       content: blogForm.content,
@@ -381,6 +415,7 @@ export default function Admin() {
     setEditingBlogId(post.id);
     setBlogForm({
       title: post.title || '',
+      slug: post.slug || '',
       category: post.category || 'Reflection',
       excerpt: post.excerpt || '',
       content: post.content || '',
@@ -1192,16 +1227,30 @@ export default function Admin() {
                         className={inputClass}
                       />
                     </div>
-                    <div>
-                      <label className="mb-2 block text-sm font-medium text-gray-700">
-                        Category
-                      </label>
-                      <input
-                        name="category"
-                        value={blogForm.category}
-                        onChange={handleBlogChange}
-                        className={inputClass}
-                      />
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div>
+                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                          Category
+                        </label>
+                        <input
+                          name="category"
+                          value={blogForm.category}
+                          onChange={handleBlogChange}
+                          className={inputClass}
+                        />
+                      </div>
+                      <div>
+                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                          Slug
+                        </label>
+                        <input
+                          name="slug"
+                          value={blogForm.slug}
+                          onChange={handleBlogChange}
+                          placeholder="auto-generated-from-title"
+                          className={inputClass}
+                        />
+                      </div>
                     </div>
                     <div>
                       <label className="mb-2 block text-sm font-medium text-gray-700">
@@ -1217,14 +1266,15 @@ export default function Admin() {
                     </div>
                     <div>
                       <label className="mb-2 block text-sm font-medium text-gray-700">Body</label>
-                      <textarea
-                        name="content"
-                        value={blogForm.content}
-                        onChange={handleBlogChange}
-                        rows={8}
-                        required
-                        className={inputClass + ' resize-none'}
-                      />
+                      <div className="rounded-xl overflow-hidden border border-gray-200 bg-white [&_.ql-toolbar]:border-0 [&_.ql-toolbar]:border-b [&_.ql-toolbar]:border-gray-200 [&_.ql-toolbar]:bg-gray-50 [&_.ql-container]:border-0 [&_.ql-editor]:min-h-[200px] [&_.ql-editor]:text-sm [&_.ql-editor]:leading-relaxed">
+                        <ReactQuill
+                          theme="snow"
+                          value={blogForm.content}
+                          onChange={handleBlogContentChange}
+                          modules={quillModules}
+                          placeholder="Write your blog post..."
+                        />
+                      </div>
                     </div>
 
                     <div className="flex items-center gap-3">
