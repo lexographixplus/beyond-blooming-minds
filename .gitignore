@@ -4,5 +4,11 @@ dist/
 coverage/
 .DS_Store
 *.log
+
+# Environment variables
 .env*
 !.env.example
+
+# Supabase local config & secrets
+supabase/.temp/
+supabase/.env

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
 import Navbar from '../components/Navbar';
 import Hero from '../features/home/Hero';
@@ -41,7 +41,7 @@ function PublicHome() {
 export default function App() {
   return (
     <CmsProvider>
-      <BrowserRouter>
+      <HashRouter>
         <Suspense
           fallback={
             <div className="flex min-h-screen flex-col items-center justify-center bg-white gap-6">
@@ -63,7 +63,7 @@ export default function App() {
             <Route path="/admin" element={<Admin />} />
           </Routes>
         </Suspense>
-      </BrowserRouter>
+      </HashRouter>
     </CmsProvider>
   );
 }

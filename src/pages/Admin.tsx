@@ -40,6 +40,7 @@ import { useCms } from '../context/CmsContext';
 import { assets, defaultBooks, mergeBooksById } from '../lib/siteContent';
 import ImageCropModal from '../features/admin/components/ImageCropModal';
 import SubmissionDrawer from '../features/admin/components/SubmissionDrawer';
+import ConfirmDialog from '../components/ConfirmDialog';
 import type { Book, BlogPost, ContactSubmission, OrderSubmission, TabKey } from '../types';
 
 /* ── Form-state types ── */
@@ -135,6 +136,19 @@ export default function Admin() {
     { kind: 'contact'; item: ContactSubmission } | { kind: 'order'; item: OrderSubmission } | null
   >(null);
 
+  /* ── Confirm dialog state ── */
+  const [confirmDialog, setConfirmDialog] = useState<{
+    title: string;
+    message: string;
+    confirmLabel?: string;
+    danger?: boolean;
+    onConfirm: () => void;
+  } | null>(null);
+
+  const showConfirm = (opts: { title: string; message: string; confirmLabel?: string; danger?: boolean; onConfirm: () => void }) => {
+    setConfirmDialog(opts);
+  };
+
   const sessionUser = user;
 
   /* ── Auth setup ── */
@@ -199,7 +213,7 @@ export default function Admin() {
       setTimeout(() => setSaveSuccess(false), 2500);
     } catch (error) {
       console.error(error);
-      alert('Failed to save content.');
+      showConfirm({ title: 'Error', message: 'Failed to save content. Please try again.', confirmLabel: 'OK', onConfirm: () => setConfirmDialog(null) });
     } finally {
       setIsSavingContent(false);
     }
@@ -236,7 +250,7 @@ export default function Admin() {
       setPendingBookCover(null);
     } catch (error) {
       console.error(error);
-      alert('Could not upload the book cover.');
+      showConfirm({ title: 'Error', message: 'Could not upload the book cover. Please try again.', confirmLabel: 'OK', onConfirm: () => setConfirmDialog(null) });
     } finally {
       setBookImageBusy(false);
     }
@@ -271,7 +285,7 @@ export default function Admin() {
       resetBookForm();
     } catch (error) {
       console.error(error);
-      alert('Failed to save the book.');
+      showConfirm({ title: 'Error', message: 'Failed to save the book. Please try again.', confirmLabel: 'OK', onConfirm: () => setConfirmDialog(null) });
     } finally {
       setSavingBook(false);
     }
@@ -292,22 +306,25 @@ export default function Admin() {
     });
   };
 
-  const removeBook = async (book: Book) => {
+  const removeBook = (book: Book) => {
     const seeded = defaultBookIds.has(book.id);
-    const confirmed = window.confirm(
-      seeded
+    showConfirm({
+      title: seeded ? 'Reset book' : 'Delete book',
+      message: seeded
         ? 'Reset this seeded book back to the default public version?'
-        : 'Delete this book from the site?',
-    );
-    if (!confirmed) return;
-
-    try {
-      await deleteBook(book.id);
-      if (editingBookId === book.id) resetBookForm();
-    } catch (error) {
-      console.error(error);
-      alert('Could not remove the book.');
-    }
+        : 'This will permanently remove the book from the site.',
+      confirmLabel: seeded ? 'Reset' : 'Delete',
+      danger: true,
+      onConfirm: async () => {
+        setConfirmDialog(null);
+        try {
+          await deleteBook(book.id);
+          if (editingBookId === book.id) resetBookForm();
+        } catch (error) {
+          console.error(error);
+        }
+      },
+    });
   };
 
   /* ── Blog handlers ── */
@@ -325,7 +342,7 @@ export default function Admin() {
       setBlogForm((previous) => ({ ...previous, image_url: url }));
     } catch (error) {
       console.error(error);
-      alert('Could not upload the blog image.');
+      showConfirm({ title: 'Error', message: 'Could not upload the blog image. Please try again.', confirmLabel: 'OK', onConfirm: () => setConfirmDialog(null) });
     } finally {
       setBlogImageBusy(false);
       event.target.value = '';
@@ -353,7 +370,7 @@ export default function Admin() {
       resetBlogForm();
     } catch (error) {
       console.error(error);
-      alert('Failed to save the blog post.');
+      showConfirm({ title: 'Error', message: 'Failed to save the blog post. Please try again.', confirmLabel: 'OK', onConfirm: () => setConfirmDialog(null) });
     } finally {
       setSavingBlog(false);
     }
@@ -371,16 +388,22 @@ export default function Admin() {
     });
   };
 
-  const removeBlog = async (post: BlogPost) => {
-    if (!window.confirm('Delete this blog post?')) return;
-
-    try {
-      await deleteBlogPost(post.id);
-      if (editingBlogId === post.id) resetBlogForm();
-    } catch (error) {
-      console.error(error);
-      alert('Could not remove the blog post.');
-    }
+  const removeBlog = (post: BlogPost) => {
+    showConfirm({
+      title: 'Delete blog post',
+      message: `This will permanently remove "${post.title}" from the site.`,
+      confirmLabel: 'Delete',
+      danger: true,
+      onConfirm: async () => {
+        setConfirmDialog(null);
+        try {
+          await deleteBlogPost(post.id);
+          if (editingBlogId === post.id) resetBlogForm();
+        } catch (error) {
+          console.error(error);
+        }
+      },
+    });
   };
 
   /* ── Submission handlers ── */
@@ -396,19 +419,23 @@ export default function Admin() {
     );
   };
 
-  const handleDeleteSubmission = async (
-    kind: 'contact' | 'order',
-    id: string,
-  ) => {
-    if (!window.confirm('Delete this submission permanently?')) return;
-    try {
-      const table = kind === 'contact' ? 'contact_submissions' : 'order_submissions';
-      await deleteSubmission(table, id);
-      if (selectedSubmission?.item.id === id) setSelectedSubmission(null);
-    } catch (error) {
-      console.error(error);
-      alert('Could not delete the submission.');
-    }
+  const handleDeleteSubmission = (kind: 'contact' | 'order', id: string) => {
+    showConfirm({
+      title: kind === 'contact' ? 'Delete message' : 'Delete order',
+      message: 'This submission will be permanently removed from the database.',
+      confirmLabel: 'Delete',
+      danger: true,
+      onConfirm: async () => {
+        setConfirmDialog(null);
+        try {
+          const table = kind === 'contact' ? 'contact_submissions' : 'order_submissions';
+          await deleteSubmission(table, id);
+          if (selectedSubmission?.item.id === id) setSelectedSubmission(null);
+        } catch (error) {
+          console.error(error);
+        }
+      },
+    });
   };
 
   const openContactSubmission = (submission: ContactSubmission) => {
@@ -1478,6 +1505,16 @@ export default function Admin() {
         item={selectedSubmission?.item || null}
         onClose={() => setSelectedSubmission(null)}
         onSave={handleSubmissionSave}
+      />
+
+      <ConfirmDialog
+        open={Boolean(confirmDialog)}
+        title={confirmDialog?.title || ''}
+        message={confirmDialog?.message || ''}
+        confirmLabel={confirmDialog?.confirmLabel}
+        danger={confirmDialog?.danger}
+        onConfirm={() => confirmDialog?.onConfirm()}
+        onCancel={() => setConfirmDialog(null)}
       />
     </div>
   );
