@@ -29,6 +29,7 @@ import {
   deleteBlogPost,
   updateContent,
   updateSubmissionStatus,
+  deleteSubmission,
   uploadImage,
   subscribeBooks,
   subscribeBlogPosts,
@@ -393,6 +394,21 @@ export default function Admin() {
         ? { ...previous, item: { ...previous.item, ...updates } }
         : previous,
     );
+  };
+
+  const handleDeleteSubmission = async (
+    kind: 'contact' | 'order',
+    id: string,
+  ) => {
+    if (!window.confirm('Delete this submission permanently?')) return;
+    try {
+      const table = kind === 'contact' ? 'contact_submissions' : 'order_submissions';
+      await deleteSubmission(table, id);
+      if (selectedSubmission?.item.id === id) setSelectedSubmission(null);
+    } catch (error) {
+      console.error(error);
+      alert('Could not delete the submission.');
+    }
   };
 
   const openContactSubmission = (submission: ContactSubmission) => {
@@ -1298,16 +1314,18 @@ export default function Admin() {
                   ) : (
                     <div className="space-y-2">
                       {contactSubmissions.map((submission) => (
-                        <button
+                        <div
                           key={submission.id}
-                          type="button"
-                          onClick={() => openContactSubmission(submission)}
-                          className="flex w-full items-center gap-4 rounded-2xl border border-gray-100 bg-white/60 p-4 text-left transition-all hover:bg-gray-50 hover:shadow-md"
+                          className="flex w-full items-center gap-4 rounded-2xl border border-gray-100 bg-white/60 p-4 transition-all hover:bg-gray-50 hover:shadow-md"
                         >
                           <div
                             className={`h-2.5 w-2.5 shrink-0 rounded-full ${statusDotColor(submission.status)}`}
                           />
-                          <div className="min-w-0 flex-1">
+                          <button
+                            type="button"
+                            onClick={() => openContactSubmission(submission)}
+                            className="min-w-0 flex-1 text-left"
+                          >
                             <div className="flex items-center gap-2">
                               <p className="truncate text-sm font-semibold text-gray-900">
                                 {submission.name}
@@ -1319,7 +1337,7 @@ export default function Admin() {
                               </span>
                             </div>
                             <p className="truncate text-xs text-gray-500">{submission.email}</p>
-                          </div>
+                          </button>
                           <p className="hidden max-w-xs truncate text-sm text-gray-500 lg:block">
                             {submission.message.length > 80
                               ? `${submission.message.slice(0, 80)}...`
@@ -1329,12 +1347,24 @@ export default function Admin() {
                             <span className="hidden text-xs text-gray-400 sm:inline">
                               {formatTimestamp(submission.created_at)}
                             </span>
-                            <span className="flex items-center gap-1 text-xs font-semibold text-primary-600">
+                            <button
+                              type="button"
+                              onClick={() => openContactSubmission(submission)}
+                              className="flex items-center gap-1 text-xs font-semibold text-primary-600 hover:text-primary-700"
+                            >
                               <Eye size={14} />
                               Open
-                            </span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteSubmission('contact', submission.id)}
+                              className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600"
+                              title="Delete"
+                            >
+                              <Trash2 size={14} />
+                            </button>
                           </div>
-                        </button>
+                        </div>
                       ))}
                     </div>
                   )}
@@ -1369,16 +1399,18 @@ export default function Admin() {
                   ) : (
                     <div className="space-y-2">
                       {orderSubmissions.map((order) => (
-                        <button
+                        <div
                           key={order.id}
-                          type="button"
-                          onClick={() => openOrderSubmission(order)}
-                          className="flex w-full items-center gap-4 rounded-2xl border border-gray-100 bg-white/60 p-4 text-left transition-all hover:bg-gray-50 hover:shadow-md"
+                          className="flex w-full items-center gap-4 rounded-2xl border border-gray-100 bg-white/60 p-4 transition-all hover:bg-gray-50 hover:shadow-md"
                         >
                           <div
                             className={`h-2.5 w-2.5 shrink-0 rounded-full ${statusDotColor(order.status)}`}
                           />
-                          <div className="min-w-0 flex-1">
+                          <button
+                            type="button"
+                            onClick={() => openOrderSubmission(order)}
+                            className="min-w-0 flex-1 text-left"
+                          >
                             <div className="flex items-center gap-2">
                               <p className="truncate text-sm font-semibold text-gray-900">
                                 {order.name}
@@ -1390,7 +1422,7 @@ export default function Admin() {
                               </span>
                             </div>
                             <p className="truncate text-xs text-gray-500">{order.book_title}</p>
-                          </div>
+                          </button>
                           <div className="hidden items-center gap-4 text-xs text-gray-500 md:flex">
                             <span>{order.phone}</span>
                             <span>Qty: {order.quantity}</span>
@@ -1400,12 +1432,24 @@ export default function Admin() {
                             <span className="hidden text-xs text-gray-400 sm:inline">
                               {formatTimestamp(order.created_at)}
                             </span>
-                            <span className="flex items-center gap-1 text-xs font-semibold text-primary-600">
+                            <button
+                              type="button"
+                              onClick={() => openOrderSubmission(order)}
+                              className="flex items-center gap-1 text-xs font-semibold text-primary-600 hover:text-primary-700"
+                            >
                               <Eye size={14} />
                               Open
-                            </span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteSubmission('order', order.id)}
+                              className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600"
+                              title="Delete"
+                            >
+                              <Trash2 size={14} />
+                            </button>
                           </div>
-                        </button>
+                        </div>
                       ))}
                     </div>
                   )}

@@ -204,6 +204,14 @@ export const updateSubmissionStatus = async (
   if (error) throw error;
 };
 
+export const deleteSubmission = async (
+  table: 'contact_submissions' | 'order_submissions',
+  id: string,
+) => {
+  const { error } = await supabase.from(table).delete().eq('id', id);
+  if (error) throw error;
+};
+
 // ── Storage ──
 
 export const uploadImage = async (file: File, folder: string): Promise<string> => {
