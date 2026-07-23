@@ -82,7 +82,7 @@ export const addBook = async (book: Omit<Book, 'id' | 'created_at'>) => {
 };
 
 export const saveBook = async (id: string, book: Partial<Book>) => {
-  const { error } = await supabase.from('books').upsert({ id, ...book });
+  const { error } = await supabase.from('books').update(book).eq('id', id);
   if (error) throw error;
 };
 

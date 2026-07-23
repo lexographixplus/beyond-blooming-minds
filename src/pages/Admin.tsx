@@ -290,9 +290,10 @@ export default function Admin() {
     };
 
     try {
-      if (editingBookId) {
+      if (editingBookId && !defaultBookIds.has(editingBookId)) {
         await saveBook(editingBookId, payload);
       } else {
+        // New book or seeded book override — insert as a new row with a DB-generated UUID
         await addBook(payload);
       }
       resetBookForm();
