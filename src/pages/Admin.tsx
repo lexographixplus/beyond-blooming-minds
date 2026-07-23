@@ -83,20 +83,6 @@ const emptyBlogForm: BlogFormState = {
   image_url: '',
 };
 
-const DEMO_ADMIN_EMAIL = 'demo@beyondbloomingminds.local';
-const DEMO_ADMIN_PASSWORD = 'demo-admin';
-const MOCK_ADMIN_STORAGE_KEY = 'bbm.mock-admin-session';
-
-const readMockAdminSession = () => {
-  if (typeof window === 'undefined') return null;
-  try {
-    const stored = window.localStorage.getItem(MOCK_ADMIN_STORAGE_KEY);
-    return stored ? (JSON.parse(stored) as MockAdminUser) : null;
-  } catch {
-    return null;
-  }
-};
-
 const formatTimestamp = (value: string | undefined | null) => {
   if (!value) return 'Just now';
   return new Date(value).toLocaleString();
@@ -115,7 +101,6 @@ export default function Admin() {
 
   /* ── Auth state ── */
   const [user, setUser] = useState<any>(null);
-  const [mockAdminUser, setMockAdminUser] = useState<MockAdminUser | null>(() => readMockAdminSession());
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
@@ -149,8 +134,7 @@ export default function Admin() {
     { kind: 'contact'; item: ContactSubmission } | { kind: 'order'; item: OrderSubmission } | null
   >(null);
 
-  const sessionUser = user || mockAdminUser;
-  const isDemoMode = Boolean(mockAdminUser && !user);
+  const sessionUser = user;
 
   /* ── Auth setup ── */
   useEffect(() => {
@@ -192,20 +176,6 @@ export default function Admin() {
   const handleLogin = async (event: FormEvent) => {
     event.preventDefault();
     setLoginError('');
-
-    if (email.trim().toLowerCase() === DEMO_ADMIN_EMAIL && password === DEMO_ADMIN_PASSWORD) {
-      const demoUser: MockAdminUser = {
-        email: DEMO_ADMIN_EMAIL,
-        displayName: 'Demo Admin',
-        mode: 'demo',
-      };
-      setMockAdminUser(demoUser);
-      window.localStorage.setItem(MOCK_ADMIN_STORAGE_KEY, JSON.stringify(demoUser));
-      setEmail('');
-      setPassword('');
-      return;
-    }
-
     try {
       const { error } = await signIn(email, password);
       if (error) throw error;
@@ -215,13 +185,7 @@ export default function Admin() {
   };
 
   const handleSignOut = async () => {
-    if (user) {
-      await signOut();
-    }
-    if (mockAdminUser) {
-      setMockAdminUser(null);
-      window.localStorage.removeItem(MOCK_ADMIN_STORAGE_KEY);
-    }
+    await signOut();
   };
 
   /* ── Content handlers ── */
@@ -531,37 +495,6 @@ export default function Admin() {
               </button>
             </form>
 
-            {/* Divider */}
-            <div className="mt-8 flex items-center gap-3">
-              <div className="h-px flex-1 bg-gray-200" />
-              <span className="text-xs text-gray-400">or</span>
-              <div className="h-px flex-1 bg-gray-200" />
-            </div>
-
-            {/* Demo section */}
-            <div className="mt-6 text-center">
-              <button
-                type="button"
-                onClick={() => {
-                  const demoUser: MockAdminUser = {
-                    email: DEMO_ADMIN_EMAIL,
-                    displayName: 'Demo Admin',
-                    mode: 'demo',
-                  };
-                  setLoginError('');
-                  setMockAdminUser(demoUser);
-                  window.localStorage.setItem(MOCK_ADMIN_STORAGE_KEY, JSON.stringify(demoUser));
-                  setEmail('');
-                  setPassword('');
-                }}
-                className="text-sm font-semibold text-primary-600 transition-colors hover:text-primary-700"
-              >
-                Enter demo mode
-              </button>
-              <p className="mt-2 text-xs text-gray-400">
-                {DEMO_ADMIN_EMAIL} / {DEMO_ADMIN_PASSWORD}
-              </p>
-            </div>
           </div>
         </div>
       </div>
@@ -603,11 +536,6 @@ export default function Admin() {
                 <p className="text-[10px] uppercase tracking-[0.15em] text-gray-500">Dashboard</p>
               </div>
             </div>
-            {isDemoMode && (
-              <span className="mt-3 inline-block rounded-lg border border-amber-500/20 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-400">
-                Demo admin mode
-              </span>
-            )}
           </div>
 
           {/* Nav */}
@@ -653,10 +581,10 @@ export default function Admin() {
               </div>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-xs font-medium text-gray-300">
-                  {isDemoMode ? 'Demo Admin' : 'Admin'}
+                  {user?.user_metadata?.name || 'Admin'}
                 </p>
                 <p className="truncate text-[11px] text-gray-500">
-                  {isDemoMode ? DEMO_ADMIN_EMAIL : user?.email || ''}
+                  {user?.email || ''}
                 </p>
               </div>
               <button

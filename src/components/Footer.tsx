@@ -57,9 +57,11 @@ export default function Footer() {
 
         <div className="mt-12 flex flex-col gap-4 border-t border-white/[0.06] pt-8 text-sm text-gray-500 md:flex-row md:items-center md:justify-between">
           <p>&copy; {new Date().getFullYear()} Beyond Blooming Minds. All rights reserved.</p>
-          <div className="flex gap-6">
+          <div className="flex items-center gap-6">
             <a href="#" className="transition-colors hover:text-white">Privacy Policy</a>
             <a href="#" className="transition-colors hover:text-white">Terms of Service</a>
+            <span className="text-gray-600">|</span>
+            <span>Site created by <span className="font-medium text-white">LexoStudio</span></span>
           </div>
         </div>
       </div>
