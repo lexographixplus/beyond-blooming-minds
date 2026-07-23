@@ -1,5 +1,5 @@
 export const assets = {
-  logo: new URL('../../logo.png', import.meta.url).href,
+  logo: `${import.meta.env.BASE_URL}logo.png`,
   hero: new URL('../../Hero IMG.jpeg', import.meta.url).href,
   psychoeducationOne: new URL('../../IMG 1.jpeg', import.meta.url).href,
   psychoeducationTwo: new URL('../../IMG 2.jpeg', import.meta.url).href,
