@@ -3,9 +3,6 @@ export const assets = {
   hero: new URL('../../Hero IMG.jpeg', import.meta.url).href,
   psychoeducationOne: new URL('../../IMG 1.jpeg', import.meta.url).href,
   psychoeducationTwo: new URL('../../IMG 2.jpeg', import.meta.url).href,
-  bookOne: new URL('../../book 1.jpg', import.meta.url).href,
-  bookTwo: new URL('../../book 2.jpg', import.meta.url).href,
-  upcomingBook: new URL('../../Upcoming Book.jpeg', import.meta.url).href,
 };
 
 export const defaultBlogIntro =

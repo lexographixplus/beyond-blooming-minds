@@ -5,7 +5,6 @@ import { ArrowLeft, BadgeDollarSign, CalendarClock, Sparkles } from 'lucide-reac
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import BookOrderModal from '../features/books/BookOrderModal';
-import { assets } from '../lib/siteContent';
 import { subscribeBooks } from '../lib/supabase';
 import type { Book } from '../types';
 
@@ -57,19 +56,24 @@ export default function BooksPage() {
                 </motion.div>
               </div>
 
-              <motion.div initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, delay: 0.2 }} className="relative flex items-center justify-center">
-                <div className="relative h-[26rem] w-full max-w-md sm:h-[30rem]">
-                  <div className="absolute top-1/2 left-1/2 z-10 h-72 w-48 -translate-x-[70%] -translate-y-1/2 -rotate-6 overflow-hidden rounded-xl ring-2 ring-white/20 shadow-2xl sm:h-80 sm:w-56">
-                    <img src={assets.bookTwo} alt="Book two" className="h-full w-full object-cover" />
+              {books.length > 0 && (
+                <motion.div initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, delay: 0.2 }} className="relative flex items-center justify-center">
+                  <div className="relative h-[26rem] w-full max-w-md sm:h-[30rem]">
+                    {books.slice(0, 3).map((book, i) => {
+                      const positions = [
+                        'z-10 -translate-x-[70%] -translate-y-1/2 -rotate-6',
+                        'z-20 -translate-x-1/2 -translate-y-1/2',
+                        'z-30 -translate-x-[30%] -translate-y-1/2 rotate-6',
+                      ];
+                      return book.image_url ? (
+                        <div key={book.id} className={`absolute top-1/2 left-1/2 h-72 w-48 overflow-hidden rounded-xl ring-2 ring-white/20 shadow-2xl sm:h-80 sm:w-56 ${positions[i]}`}>
+                          <img src={book.image_url} alt={book.title} className="h-full w-full object-cover" />
+                        </div>
+                      ) : null;
+                    })}
                   </div>
-                  <div className="absolute top-1/2 left-1/2 z-20 h-72 w-48 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-xl ring-2 ring-white/20 shadow-2xl sm:h-80 sm:w-56">
-                    <img src={assets.bookOne} alt="Book one" className="h-full w-full object-cover" />
-                  </div>
-                  <div className="absolute top-1/2 left-1/2 z-30 h-72 w-48 -translate-x-[30%] -translate-y-1/2 rotate-6 overflow-hidden rounded-xl ring-2 ring-white/20 shadow-2xl sm:h-80 sm:w-56">
-                    <img src={assets.upcomingBook} alt="Upcoming book" className="h-full w-full object-cover" />
-                  </div>
-                </div>
-              </motion.div>
+                </motion.div>
+              )}
             </div>
           </div>
         </section>
@@ -118,32 +122,41 @@ export default function BooksPage() {
         </section>
 
         {/* Upcoming */}
-        <section id="upcoming" className="bg-gray-50 px-4 py-24 sm:px-6 lg:px-8 lg:py-32">
-          <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
-            <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
-              <img src={assets.upcomingBook} alt="Upcoming book" className="h-full w-full object-cover" />
-            </div>
-            <div>
-              <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] text-primary-600">
-                <CalendarClock size={16} />Coming soon
+        {upcomingBook && (
+          <section id="upcoming" className="bg-gray-50 px-4 py-24 sm:px-6 lg:px-8 lg:py-32">
+            <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
+              <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+                {upcomingBook.image_url ? (
+                  <img src={upcomingBook.image_url} alt={upcomingBook.title} className="h-full w-full object-cover" />
+                ) : (
+                  <div className="flex h-80 items-center justify-center bg-gray-50">
+                    <Sparkles className="text-gray-300" size={48} />
+                  </div>
+                )}
               </div>
-              <h2 className="mt-5 text-3xl font-bold text-gray-900 md:text-4xl lg:text-[2.75rem] tracking-tight">
-                An upcoming book with a dedicated spotlight
-              </h2>
-              <p className="mt-4 max-w-2xl text-lg leading-relaxed text-gray-500">
-                The upcoming cover is placed here so it feels like a proper announcement, while the order CTA can be used as a waitlist request or pre-order enquiry.
-              </p>
-              <div className="mt-8 flex flex-wrap gap-4">
-                <button type="button" onClick={() => setSelectedBook(upcomingBook || null)} className="rounded-xl bg-primary-600 px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-primary-700 hover:shadow-md hover:shadow-primary-500/25">
-                  {upcomingBook?.cta_label || 'Join the waitlist'}
-                </button>
-                <Link to="/" className="rounded-xl border border-gray-200 bg-white px-6 py-3 text-sm font-semibold text-gray-700 transition-all hover:shadow-sm">
-                  Explore the site
-                </Link>
+              <div>
+                <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] text-primary-600">
+                  <CalendarClock size={16} />{upcomingBook.status || 'Coming soon'}
+                </div>
+                <h2 className="mt-5 text-3xl font-bold text-gray-900 md:text-4xl lg:text-[2.75rem] tracking-tight">
+                  {upcomingBook.title}
+                </h2>
+                <p className="text-sm text-gray-500 mt-1">{upcomingBook.author}</p>
+                <p className="mt-4 max-w-2xl text-lg leading-relaxed text-gray-500">
+                  {upcomingBook.description}
+                </p>
+                <div className="mt-8 flex flex-wrap gap-4">
+                  <button type="button" onClick={() => setSelectedBook(upcomingBook)} className="rounded-xl bg-primary-600 px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-primary-700 hover:shadow-md hover:shadow-primary-500/25">
+                    {upcomingBook.cta_label || 'Join the waitlist'}
+                  </button>
+                  <Link to="/" className="rounded-xl border border-gray-200 bg-white px-6 py-3 text-sm font-semibold text-gray-700 transition-all hover:shadow-sm">
+                    Explore the site
+                  </Link>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
       </main>
       <Footer />
       <BookOrderModal isOpen={Boolean(selectedBook)} book={selectedBook} onClose={() => setSelectedBook(null)} />
