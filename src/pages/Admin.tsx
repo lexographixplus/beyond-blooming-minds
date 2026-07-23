@@ -13,7 +13,6 @@ import {
   MessageSquare,
   PenSquare,
   Plus,
-  RotateCcw,
   ShoppingBag,
   Trash2,
   Upload,
@@ -39,7 +38,7 @@ import {
   subscribeOrderSubmissions,
 } from '../lib/supabase';
 import { useCms } from '../context/CmsContext';
-import { assets, defaultBooks, mergeBooksById } from '../lib/siteContent';
+import { assets } from '../lib/siteContent';
 import ImageCropModal from '../features/admin/components/ImageCropModal';
 import SubmissionDrawer from '../features/admin/components/SubmissionDrawer';
 import ConfirmDialog from '../components/ConfirmDialog';
@@ -186,8 +185,7 @@ export default function Admin() {
     return () => unsubs.forEach((fn) => fn());
   }, [sessionUser]);
 
-  const allBooks = mergeBooksById(defaultBooks as Book[], books) as Book[];
-  const defaultBookIds = new Set(defaultBooks.map((b) => b.id));
+  const allBooks = books;
 
   /* ── Reset helpers ── */
   const resetBookForm = () => {
@@ -290,10 +288,9 @@ export default function Admin() {
     };
 
     try {
-      if (editingBookId && !defaultBookIds.has(editingBookId)) {
+      if (editingBookId) {
         await saveBook(editingBookId, payload);
       } else {
-        // New book or seeded book override — insert as a new row with a DB-generated UUID
         await addBook(payload);
       }
       resetBookForm();
@@ -321,13 +318,10 @@ export default function Admin() {
   };
 
   const removeBook = (book: Book) => {
-    const seeded = defaultBookIds.has(book.id);
     showConfirm({
-      title: seeded ? 'Reset book' : 'Delete book',
-      message: seeded
-        ? 'Reset this seeded book back to the default public version?'
-        : 'This will permanently remove the book from the site.',
-      confirmLabel: seeded ? 'Reset' : 'Delete',
+      title: 'Delete book',
+      message: 'This will permanently remove the book from the site.',
+      confirmLabel: 'Delete',
       danger: true,
       onConfirm: async () => {
         setConfirmDialog(null);
@@ -1114,14 +1108,15 @@ export default function Admin() {
                     <div className="mb-1">
                       <h3 className="text-sm font-semibold text-gray-900">Current books</h3>
                       <p className="mt-1 text-xs text-gray-500">
-                        Edit titles, create new books, or reset to default.
+                        Edit titles, create new books, or delete.
                       </p>
                     </div>
 
-                    {allBooks.map((book) => {
-                      const seeded = defaultBookIds.has(book.id);
-
-                      return (
+                    {allBooks.length === 0 ? (
+                      <div className="rounded-2xl border border-dashed border-gray-200 bg-white p-10 text-center text-gray-500">
+                        No books yet. Add one using the form.
+                      </div>
+                    ) : allBooks.map((book) => (
                         <div
                           key={book.id}
                           className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white/60 p-4 transition-shadow hover:shadow-md"
@@ -1164,14 +1159,13 @@ export default function Admin() {
                               type="button"
                               onClick={() => removeBook(book)}
                               className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600"
-                              title={seeded ? 'Reset' : 'Delete'}
+                              title="Delete"
                             >
-                              {seeded ? <RotateCcw size={16} /> : <Trash2 size={16} />}
+                              <Trash2 size={16} />
                             </button>
                           </div>
                         </div>
-                      );
-                    })}
+                      ))}
                   </div>
                 </div>
               )}

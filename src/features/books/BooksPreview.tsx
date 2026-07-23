@@ -2,20 +2,17 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
-import { defaultBooks, mergeBooksById } from '../../lib/siteContent';
 import { subscribeBooks } from '../../lib/supabase';
 import type { Book } from '../../types';
 import BookCard from './BookCard';
 import BookOrderModal from './BookOrderModal';
 
 export default function BooksPreview() {
-  const [books, setBooks] = useState<Book[]>(defaultBooks as Book[]);
+  const [books, setBooks] = useState<Book[]>([]);
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
 
   useEffect(() => {
-    const unsubscribe = subscribeBooks((data) => {
-      setBooks(mergeBooksById(defaultBooks as Book[], data) as Book[]);
-    });
+    const unsubscribe = subscribeBooks(setBooks);
     return unsubscribe;
   }, []);
 

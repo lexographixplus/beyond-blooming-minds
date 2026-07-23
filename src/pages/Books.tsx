@@ -5,23 +5,21 @@ import { ArrowLeft, BadgeDollarSign, CalendarClock, Sparkles } from 'lucide-reac
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import BookOrderModal from '../features/books/BookOrderModal';
-import { defaultBooks, assets, mergeBooksById } from '../lib/siteContent';
+import { assets } from '../lib/siteContent';
 import { subscribeBooks } from '../lib/supabase';
 import type { Book } from '../types';
 
 export default function BooksPage() {
-  const [books, setBooks] = useState<Book[]>(defaultBooks as Book[]);
+  const [books, setBooks] = useState<Book[]>([]);
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
 
   useEffect(() => {
-    const unsubscribe = subscribeBooks((data) => {
-      setBooks(mergeBooksById(defaultBooks as Book[], data) as Book[]);
-    });
+    const unsubscribe = subscribeBooks(setBooks);
     return unsubscribe;
   }, []);
 
   const featuredBooks = useMemo(() => books.filter((b) => b.featured), [books]);
-  const upcomingBook = books.find((b) => b.id === 'upcoming-book') || featuredBooks[0];
+  const upcomingBook = books.find((b) => (b.status || '').toLowerCase().includes('upcoming')) || featuredBooks[0];
 
   return (
     <div className="min-h-screen bg-white">
@@ -88,7 +86,7 @@ export default function BooksPage() {
             </div>
 
             <div className="grid gap-8 md:grid-cols-2">
-              {featuredBooks.filter((b) => b.id !== 'upcoming-book').map((book, index) => (
+              {featuredBooks.filter((b) => !(b.status || '').toLowerCase().includes('upcoming')).map((book, index) => (
                 <motion.article key={book.id} initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.1 }}
                   className="group grid overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-lg transition-all duration-300 xl:grid-cols-[0.92fr_1.08fr]"
                 >
