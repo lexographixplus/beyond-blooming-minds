@@ -71,7 +71,7 @@ export default function BlogPostPage() {
   const readTime = estimateReadTime(post.content || '');
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen overflow-x-hidden bg-white">
       <Navbar />
       <main className="pt-16 lg:pt-[72px]">
         {/* Hero */}
@@ -135,16 +135,17 @@ export default function BlogPostPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="prose prose-lg prose-gray max-w-none
+            className="prose prose-lg prose-gray max-w-none break-words
               prose-headings:font-bold prose-headings:tracking-tight
               prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
               prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
               prose-p:leading-relaxed prose-p:text-gray-600
               prose-a:text-primary-600 prose-a:no-underline hover:prose-a:underline
-              prose-img:rounded-xl prose-img:shadow-md
+              prose-img:rounded-xl prose-img:shadow-md prose-img:max-w-full prose-img:h-auto
               prose-blockquote:border-primary-400 prose-blockquote:bg-primary-50/50 prose-blockquote:rounded-r-xl prose-blockquote:py-1 prose-blockquote:px-6
               prose-strong:text-gray-900
-              prose-ul:text-gray-600 prose-ol:text-gray-600"
+              prose-ul:text-gray-600 prose-ol:text-gray-600
+              [&_iframe]:max-w-full [&_pre]:overflow-x-auto"
             dangerouslySetInnerHTML={{ __html: post.content || '' }}
           />
         </article>
