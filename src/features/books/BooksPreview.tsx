@@ -31,7 +31,7 @@ export default function BooksPreview() {
               Books that speak to healing, identity, and growth
             </h2>
             <p className="mt-4 text-lg leading-relaxed text-gray-500">
-              Featured books with direct order forms — no leaving the page.
+              Browse our titles and place your order in just a few clicks.
             </p>
           </div>
           <Link

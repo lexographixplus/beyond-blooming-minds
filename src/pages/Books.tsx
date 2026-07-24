@@ -48,7 +48,7 @@ export default function BooksPage() {
                 <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}
                   className="mt-5 max-w-xl text-lg leading-relaxed text-white/70"
                 >
-                  Featured titles with direct order forms so readers can request copies while the team manages every order from the dashboard.
+                  Explore our growing collection of books on healing, identity, and growth — and order your copies right here.
                 </motion.p>
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }} className="mt-8 flex flex-wrap gap-4">
                   <a href="#featured-books" className="rounded-xl bg-white px-6 py-3 text-sm font-semibold text-gray-900 transition-all hover:bg-gray-100 hover:shadow-lg">Browse books</a>

@@ -97,11 +97,11 @@ export default function BookOrderModal({ isOpen, onClose, book }: BookOrderModal
                   <div className="grid gap-5 md:grid-cols-2">
                     <div>
                       <label className="mb-2 block text-sm font-medium text-gray-700">Your name</label>
-                      <input name="name" value={formData.name} onChange={handleChange} required className={inputClass} placeholder="Jane Doe" />
+                      <input name="name" value={formData.name} onChange={handleChange} required className={inputClass} placeholder="Awa Camara" />
                     </div>
                     <div>
                       <label className="mb-2 block text-sm font-medium text-gray-700">Email address</label>
-                      <input type="email" name="email" value={formData.email} onChange={handleChange} required className={inputClass} placeholder="jane@example.com" />
+                      <input type="email" name="email" value={formData.email} onChange={handleChange} required className={inputClass} placeholder="awa@example.com" />
                     </div>
                   </div>
                   <div className="grid gap-5 md:grid-cols-2">

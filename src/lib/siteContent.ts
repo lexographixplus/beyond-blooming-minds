@@ -11,6 +11,6 @@ export const defaultBlogIntro =
 export const heroStats = [
   { label: 'Psychoeducation sessions', value: 'School & community' },
   { label: 'Books and reflections', value: 'Growing collection' },
-  { label: 'Order response', value: 'Managed in dashboard' },
+  { label: 'Order response', value: 'Within 24 hours' },
 ];
 
