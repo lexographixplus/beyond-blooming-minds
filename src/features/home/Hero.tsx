@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useCms } from '../../context/CmsContext';
 import { assets, heroStats } from '../../lib/siteContent';
 
@@ -22,16 +22,6 @@ export default function Hero() {
       <div className="relative z-10 mx-auto w-full max-w-7xl px-4 py-32 sm:px-6 lg:px-8 lg:py-40">
         <div className="grid items-center gap-16 lg:grid-cols-2 lg:gap-20">
           <div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="mb-6 inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.06] px-4 py-2 backdrop-blur-md"
-            >
-              <Sparkles size={14} className="text-accent-400" />
-              <span className="text-sm font-medium text-white/80">Beyond Blooming Minds</span>
-            </motion.div>
-
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -74,6 +64,10 @@ export default function Hero() {
               </Link>
               <a
                 href="#psychoeducation"
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.querySelector('#psychoeducation')?.scrollIntoView({ behavior: 'smooth' });
+                }}
                 className="inline-flex items-center justify-center rounded-xl border border-white/20 px-7 py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:border-white/40 hover:bg-white/[0.06]"
               >
                 Our approach

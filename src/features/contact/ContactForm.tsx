@@ -32,7 +32,7 @@ export default function ContactForm() {
   const inputClass = "w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-gray-900 hover:border-gray-300 focus:ring-2 focus:ring-primary-400/20 focus:border-primary-400 outline-none transition-all";
 
   return (
-    <section className="py-24 bg-gray-50 relative lg:py-32">
+    <section id="contact" className="py-24 bg-gray-50 relative lg:py-32">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-2xl shadow-sm p-8 md:p-12 border border-gray-100 relative overflow-hidden">
           <div className="pointer-events-none absolute -top-20 -right-20 h-64 w-64 rounded-full bg-primary-100/30 blur-3xl" />

@@ -7,7 +7,7 @@ export default function Footer() {
   const { content } = useCms();
 
   return (
-    <footer id="contact" className="border-t border-gray-800/50 bg-gray-950 text-gray-300">
+    <footer className="border-t border-gray-800/50 bg-gray-950 text-gray-300">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-2">
@@ -29,7 +29,15 @@ export default function Footer() {
               <li><Link to="/" className="transition-colors hover:text-white">Home</Link></li>
               <li><Link to="/books" className="transition-colors hover:text-white">Books</Link></li>
               <li><Link to="/blog" className="transition-colors hover:text-white">Blog</Link></li>
-              <li><a href="/#psychoeducation" className="transition-colors hover:text-white">Psychoeducation</a></li>
+              <li>
+                <Link
+                  to="/"
+                  onClick={() => setTimeout(() => document.querySelector('#psychoeducation')?.scrollIntoView({ behavior: 'smooth' }), 100)}
+                  className="transition-colors hover:text-white"
+                >
+                  Psychoeducation
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -58,8 +66,8 @@ export default function Footer() {
         <div className="mt-12 flex flex-col gap-4 border-t border-white/[0.06] pt-8 text-sm text-gray-500 md:flex-row md:items-center md:justify-between">
           <p>&copy; {new Date().getFullYear()} Beyond Blooming Minds. All rights reserved.</p>
           <div className="flex items-center gap-6">
-            <a href="#" className="transition-colors hover:text-white">Privacy Policy</a>
-            <a href="#" className="transition-colors hover:text-white">Terms of Service</a>
+            <Link to="/privacy" className="transition-colors hover:text-white">Privacy Policy</Link>
+            <Link to="/terms" className="transition-colors hover:text-white">Terms of Service</Link>
             <span className="text-gray-600">|</span>
             <span>Site created by <span className="font-medium text-white">LexoStudio</span></span>
           </div>

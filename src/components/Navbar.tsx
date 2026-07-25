@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { MouseEvent } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Menu, X } from 'lucide-react';
 import { assets } from '../lib/siteContent';
@@ -23,6 +23,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const isHome = location.pathname === '/';
   const navLinks = isHome ? homeLinks : pageLinks;
   const isTransparent = isHome && !scrolled && !isOpen;
@@ -36,7 +37,12 @@ export default function Navbar() {
 
   const handleAnchorClick = (e: MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
-    document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
+    if (isHome) {
+      document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      navigate('/');
+      setTimeout(() => document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' }), 150);
+    }
     setIsOpen(false);
   };
 

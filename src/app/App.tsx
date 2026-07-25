@@ -18,6 +18,8 @@ const Admin = lazy(() => import('../pages/Admin'));
 const BooksPage = lazy(() => import('../pages/Books'));
 const BlogPage = lazy(() => import('../pages/Blog'));
 const BlogPostPage = lazy(() => import('../pages/BlogPost'));
+const PrivacyPolicy = lazy(() => import('../pages/PrivacyPolicy'));
+const TermsOfService = lazy(() => import('../pages/TermsOfService'));
 
 function PublicHome() {
   return (
@@ -62,6 +64,8 @@ export default function App() {
             <Route path="/books" element={<BooksPage />} />
             <Route path="/blog" element={<BlogPage />} />
             <Route path="/blog/:slug" element={<BlogPostPage />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<TermsOfService />} />
             <Route path="/admin" element={<Admin />} />
           </Routes>
         </Suspense>
