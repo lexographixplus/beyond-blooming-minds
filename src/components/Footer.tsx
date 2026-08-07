@@ -2,9 +2,13 @@ import { Instagram, Mail, Phone } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCms } from '../context/CmsContext';
 import { assets } from '../lib/siteContent';
+import { toWhatsAppNumber } from '../lib/utils';
 
 export default function Footer() {
   const { content } = useCms();
+
+  // The contact field may hold more than one number; link the first.
+  const phoneNumber = toWhatsAppNumber(content.whatsapp);
 
   return (
     <footer className="border-t border-gray-800/50 bg-gray-950 text-gray-300">
@@ -50,12 +54,17 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href={`tel:${content.whatsapp}`} className="flex items-center gap-3 transition-colors hover:text-white">
+                <a
+                  href={phoneNumber ? `https://wa.me/${phoneNumber}` : `tel:${content.whatsapp}`}
+                  target={phoneNumber ? '_blank' : undefined}
+                  rel="noreferrer"
+                  className="flex items-center gap-3 transition-colors hover:text-white"
+                >
                   <Phone size={16} className="text-primary-400" /><span>{content.whatsapp}</span>
                 </a>
               </li>
               <li>
-                <a href={`https://instagram.com/${content.instagram.replace('@', '')}`} target="_blank" rel="noreferrer" className="flex items-center gap-3 transition-colors hover:text-white">
+                <a href={`https://instagram.com/${(content.instagram || '').replace('@', '')}`} target="_blank" rel="noreferrer" className="flex items-center gap-3 transition-colors hover:text-white">
                   <Instagram size={16} className="text-accent-400" /><span>{content.instagram}</span>
                 </a>
               </li>

@@ -2,16 +2,10 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { ArrowLeft, CalendarDays, Clock, Tag } from 'lucide-react';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import SiteLayout from '../components/SiteLayout';
 import { getBlogPosts } from '../lib/supabase';
+import { estimateReadTime, formatDate } from '../lib/utils';
 import type { BlogPost } from '../types';
-
-function estimateReadTime(html: string) {
-  const text = html.replace(/<[^>]*>/g, '');
-  const words = text.split(/\s+/).filter(Boolean).length;
-  return Math.max(1, Math.round(words / 200));
-}
 
 export default function BlogPostPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -39,42 +33,37 @@ export default function BlogPostPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white">
-        <Navbar />
-        <div className="flex min-h-[60vh] items-center justify-center pt-16">
+      <SiteLayout>
+        <div className="flex min-h-[60vh] items-center justify-center">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-200 border-t-primary-600" />
         </div>
-        <Footer />
-      </div>
+      </SiteLayout>
     );
   }
 
   if (!post) {
     return (
-      <div className="min-h-screen bg-white">
-        <Navbar />
-        <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 pt-16">
+      <SiteLayout>
+        <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-4 text-center">
           <h1 className="text-2xl font-bold text-gray-900">Post not found</h1>
+          <p className="text-gray-500">This article may have been renamed or removed.</p>
           <Link
             to="/blog"
-            className="inline-flex items-center gap-2 rounded-xl bg-primary-600 px-6 py-3 text-sm font-semibold text-white hover:bg-primary-700"
+            className="inline-flex items-center gap-2 rounded-xl bg-primary-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-700"
           >
             <ArrowLeft size={16} />
             Back to blog
           </Link>
         </div>
-        <Footer />
-      </div>
+      </SiteLayout>
     );
   }
 
   const readTime = estimateReadTime(post.content || '');
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-white">
-      <Navbar />
-      <main className="pt-16 lg:pt-[72px]">
-        {/* Hero */}
+    <SiteLayout>
+      {/* Hero */}
         <section className="relative overflow-hidden bg-gradient-to-br from-primary-950 via-primary-900 to-primary-950 px-4 pt-28 pb-16 sm:px-6 lg:px-8 lg:pt-36 lg:pb-24">
           <div className="pointer-events-none absolute inset-0">
             <div className="absolute -top-24 right-0 h-[420px] w-[420px] rounded-full bg-primary-600/15 blur-[120px]" />
@@ -98,7 +87,7 @@ export default function BlogPostPage() {
                 </span>
                 <span className="inline-flex items-center gap-1.5 text-xs text-white/50">
                   <CalendarDays size={12} />
-                  {post.created_at ? new Date(post.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Draft'}
+                  {formatDate(post.created_at)}
                 </span>
                 <span className="inline-flex items-center gap-1.5 text-xs text-white/50">
                   <Clock size={12} />
@@ -176,10 +165,8 @@ export default function BlogPostPage() {
                 ))}
               </div>
             </div>
-          </section>
-        )}
-      </main>
-      <Footer />
-    </div>
+        </section>
+      )}
+    </SiteLayout>
   );
 }

@@ -2,11 +2,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { ArrowLeft, BadgeDollarSign, CalendarClock, Sparkles } from 'lucide-react';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import SiteLayout from '../components/SiteLayout';
 import BookOrderModal from '../features/books/BookOrderModal';
 import { subscribeBooks } from '../lib/supabase';
 import type { Book } from '../types';
+
+const isUpcoming = (book: Book) => (book.status || '').toLowerCase().includes('upcoming');
 
 export default function BooksPage() {
   const [books, setBooks] = useState<Book[]>([]);
@@ -17,14 +18,16 @@ export default function BooksPage() {
     return unsubscribe;
   }, []);
 
-  const featuredBooks = useMemo(() => books.filter((b) => b.featured), [books]);
-  const upcomingBook = books.find((b) => (b.status || '').toLowerCase().includes('upcoming')) || featuredBooks[0];
+  // Featured shelf and the upcoming spotlight must never show the same title twice.
+  const upcomingBook = useMemo(() => books.find(isUpcoming) ?? null, [books]);
+  const featuredBooks = useMemo(
+    () => books.filter((b) => b.featured && !isUpcoming(b)),
+    [books],
+  );
 
   return (
-    <div className="min-h-screen bg-white">
-      <Navbar />
-      <main className="pt-16 lg:pt-[72px]">
-        {/* Hero */}
+    <SiteLayout>
+      {/* Hero */}
         <section className="relative overflow-hidden bg-gradient-to-br from-primary-950 via-primary-900 to-primary-950 pt-32 pb-20 lg:pt-40 lg:pb-28">
           <div className="pointer-events-none absolute inset-0">
             <div className="absolute -top-40 -left-40 h-[36rem] w-[36rem] rounded-full bg-primary-700/20 blur-[120px]" />
@@ -52,7 +55,9 @@ export default function BooksPage() {
                 </motion.p>
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }} className="mt-8 flex flex-wrap gap-4">
                   <a href="#featured-books" onClick={(e) => { e.preventDefault(); document.querySelector('#featured-books')?.scrollIntoView({ behavior: 'smooth' }); }} className="rounded-xl bg-white px-6 py-3 text-sm font-semibold text-gray-900 transition-all hover:bg-gray-100 hover:shadow-lg">Browse books</a>
-                  <a href="#upcoming" onClick={(e) => { e.preventDefault(); document.querySelector('#upcoming')?.scrollIntoView({ behavior: 'smooth' }); }} className="rounded-xl border border-white/20 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/[0.06]">Upcoming release</a>
+                  {upcomingBook && (
+                    <a href="#upcoming" onClick={(e) => { e.preventDefault(); document.querySelector('#upcoming')?.scrollIntoView({ behavior: 'smooth' }); }} className="rounded-xl border border-white/20 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/[0.06]">Upcoming release</a>
+                  )}
                 </motion.div>
               </div>
 
@@ -89,8 +94,16 @@ export default function BooksPage() {
               <h2 className="text-3xl font-bold text-gray-900 md:text-4xl lg:text-[2.75rem] tracking-tight">Featured books</h2>
             </div>
 
+            {featuredBooks.length === 0 && (
+              <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-14 text-center">
+                <Sparkles className="mx-auto text-gray-300" size={40} />
+                <h3 className="mt-4 text-xl font-bold text-gray-900">No books published yet</h3>
+                <p className="mt-2 text-gray-500">New titles appear here as soon as they are added.</p>
+              </div>
+            )}
+
             <div className="grid gap-8 md:grid-cols-2">
-              {featuredBooks.filter((b) => !(b.status || '').toLowerCase().includes('upcoming')).map((book, index) => (
+              {featuredBooks.map((book, index) => (
                 <motion.article key={book.id} initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.1 }}
                   className="group grid overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-lg transition-all duration-300 xl:grid-cols-[0.92fr_1.08fr]"
                 >
@@ -108,7 +121,7 @@ export default function BooksPage() {
                     </div>
                     <div className="flex flex-wrap items-center gap-3">
                       <span className="inline-flex items-center gap-2 rounded-lg bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
-                        <BadgeDollarSign size={14} />{book.price}
+                        <BadgeDollarSign size={14} />{book.price || 'Enquire for price'}
                       </span>
                       <button type="button" onClick={() => setSelectedBook(book)} className="rounded-xl bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-primary-700 hover:shadow-md hover:shadow-primary-500/25">
                         {book.cta_label || 'Order now'}
@@ -155,11 +168,10 @@ export default function BooksPage() {
                 </div>
               </div>
             </div>
-          </section>
-        )}
-      </main>
-      <Footer />
+        </section>
+      )}
+
       <BookOrderModal isOpen={Boolean(selectedBook)} book={selectedBook} onClose={() => setSelectedBook(null)} />
-    </div>
+    </SiteLayout>
   );
 }

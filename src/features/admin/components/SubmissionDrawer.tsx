@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { ChangeEvent } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { CheckCircle2, Copy, Mail, MessageSquareText, Phone, Send, X } from 'lucide-react';
+import { CheckCircle2, Copy, Mail, MessageSquareText, Send, X } from 'lucide-react';
+import { useDismissable } from '../../../hooks/useDismissable';
+import { formatDateTime } from '../../../lib/utils';
 import type { ContactSubmission, OrderSubmission } from '../../../types';
 
 type SubmissionKind = 'contact' | 'order';
@@ -63,13 +65,17 @@ export default function SubmissionDrawer({ open, kind, item, onClose, onSave }: 
   const [replyDraft, setReplyDraft] = useState('');
   const [statusDraft, setStatusDraft] = useState('new');
   const [saving, setSaving] = useState(false);
-  const [copyState, setCopyState] = useState<'idle' | 'copied'>('idle');
+  const [copyState, setCopyState] = useState<'idle' | 'copied' | 'failed'>('idle');
+  const [saveError, setSaveError] = useState('');
+
+  useDismissable(open, onClose);
 
   useEffect(() => {
     if (!item || !open) return;
     setReplyDraft(item.admin_reply || '');
     setStatusDraft(item.status || 'new');
     setCopyState('idle');
+    setSaveError('');
   }, [item, open]);
 
   const mailtoHref = useMemo(() => {
@@ -85,20 +91,30 @@ export default function SubmissionDrawer({ open, kind, item, onClose, onSave }: 
 
   const handleSave = async (resolved = false) => {
     setSaving(true);
+    setSaveError('');
     try {
       await onSave({
         status: resolved ? 'resolved' : statusDraft,
         admin_reply: replyDraft,
         resolved_at: resolved ? new Date().toISOString() : item.resolved_at || null,
       });
+      if (resolved) setStatusDraft('resolved');
+    } catch (error) {
+      console.error('Failed to save submission', error);
+      setSaveError('Could not save. Check your connection and try again.');
     } finally {
       setSaving(false);
     }
   };
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(buildDraftBody(kind, item, replyDraft));
-    setCopyState('copied');
+    try {
+      await navigator.clipboard.writeText(buildDraftBody(kind, item, replyDraft));
+      setCopyState('copied');
+    } catch (error) {
+      console.error('Clipboard unavailable', error);
+      setCopyState('failed');
+    }
     setTimeout(() => setCopyState('idle'), 1800);
   };
 
@@ -147,9 +163,7 @@ export default function SubmissionDrawer({ open, kind, item, onClose, onSave }: 
                 </div>
                 <div className="rounded-xl bg-gray-50 p-3">
                   <div className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.15em] text-gray-400"><CheckCircle2 size={12} />Created</div>
-                  <p className="mt-1.5 text-sm text-gray-800">
-                    {item.created_at ? new Date(item.created_at).toLocaleString() : 'Just now'}
-                  </p>
+                  <p className="mt-1.5 text-sm text-gray-800">{formatDateTime(item.created_at)}</p>
                 </div>
               </div>
 
@@ -210,6 +224,9 @@ export default function SubmissionDrawer({ open, kind, item, onClose, onSave }: 
             </div>
 
             <div className="border-t border-gray-100 bg-white px-6 py-4">
+              {saveError && (
+                <p className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-600">{saveError}</p>
+              )}
               <div className="grid gap-2.5 sm:grid-cols-2">
                 <button type="button" onClick={() => handleSave(false)} disabled={saving} className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 disabled:opacity-70 transition-colors">
                   <Send size={15} />{saving ? 'Saving...' : 'Save reply'}
@@ -218,7 +235,8 @@ export default function SubmissionDrawer({ open, kind, item, onClose, onSave }: 
                   <Mail size={15} />Open email draft
                 </a>
                 <button type="button" onClick={handleCopy} className="inline-flex items-center justify-center gap-2 rounded-xl bg-gray-100 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200 transition-colors">
-                  <Copy size={15} />{copyState === 'copied' ? 'Copied' : 'Copy reply'}
+                  <Copy size={15} />
+                  {copyState === 'copied' ? 'Copied' : copyState === 'failed' ? 'Copy failed' : 'Copy reply'}
                 </button>
                 <button type="button" onClick={() => handleSave(true)} disabled={saving} className="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-70 transition-colors">
                   <MessageSquareText size={15} />Mark resolved

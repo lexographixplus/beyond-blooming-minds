@@ -77,8 +77,11 @@ export default function Navbar() {
               >{link.name}</a>
             ) : (
               <Link key={link.name} to={link.href}
+                aria-current={location.pathname === link.href ? 'page' : undefined}
                 className={`rounded-lg px-3.5 py-2 text-sm font-medium transition-colors ${
-                  isTransparent ? 'text-white/80 hover:text-white hover:bg-white/10' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                  location.pathname === link.href
+                    ? isTransparent ? 'bg-white/15 text-white' : 'bg-primary-50 text-primary-700'
+                    : isTransparent ? 'text-white/80 hover:text-white hover:bg-white/10' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                 }`}
               >{link.name}</Link>
             ),
@@ -120,7 +123,12 @@ export default function Navbar() {
                   >{link.name}</a>
                 ) : (
                   <Link key={link.name} to={link.href} onClick={() => setIsOpen(false)}
-                    className="rounded-lg px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50"
+                    aria-current={location.pathname === link.href ? 'page' : undefined}
+                    className={`rounded-lg px-4 py-3 text-base font-medium ${
+                      location.pathname === link.href
+                        ? 'bg-primary-50 text-primary-700'
+                        : 'text-gray-700 hover:bg-gray-50'
+                    }`}
                   >{link.name}</Link>
                 ),
               )}

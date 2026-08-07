@@ -1,15 +1,12 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { ArrowLeft } from 'lucide-react';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import SiteLayout from '../components/SiteLayout';
 
 export default function PrivacyPolicy() {
   return (
-    <div className="min-h-screen bg-white">
-      <Navbar />
-      <main className="pt-16 lg:pt-[72px]">
-        <section className="relative overflow-hidden bg-gradient-to-br from-primary-950 via-primary-900 to-primary-950 px-4 pt-28 pb-16 sm:px-6 lg:px-8 lg:pt-36 lg:pb-24">
+    <SiteLayout>
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary-950 via-primary-900 to-primary-950 px-4 pt-28 pb-16 sm:px-6 lg:px-8 lg:pt-36 lg:pb-24">
           <div className="pointer-events-none absolute inset-0">
             <div className="absolute -top-24 right-0 h-[420px] w-[420px] rounded-full bg-primary-600/15 blur-[120px]" />
             <div className="absolute -bottom-20 left-0 h-[360px] w-[360px] rounded-full bg-accent-500/10 blur-[100px]" />
@@ -106,9 +103,7 @@ export default function PrivacyPolicy() {
               If you have any questions about this Privacy Policy or how we handle your data, please reach out to us through our <Link to="/" className="text-primary-600 hover:underline">contact form</Link> or the contact details listed on our website.
             </p>
           </div>
-        </article>
-      </main>
-      <Footer />
-    </div>
+      </article>
+    </SiteLayout>
   );
 }

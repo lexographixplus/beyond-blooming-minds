@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ChangeEvent, PointerEvent, SyntheticEvent } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { Check, GripHorizontal, RotateCcw, X } from 'lucide-react';
+import { useDismissable } from '../../../hooks/useDismissable';
 
 type CropModalProps = {
   open: boolean;
@@ -46,6 +47,8 @@ export default function ImageCropModal({
   const [zoom, setZoom] = useState(1);
   const [saving, setSaving] = useState(false);
   const [ready, setReady] = useState(false);
+
+  useDismissable(open, onClose);
 
   const coverScale = useMemo(() => {
     if (!naturalSize.width || !naturalSize.height || !frameSize.width || !frameSize.height) return 1;

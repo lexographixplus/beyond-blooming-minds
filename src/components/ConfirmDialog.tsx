@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { AlertTriangle, X } from 'lucide-react';
+import { useDismissable } from '../hooks/useDismissable';
 
 type ConfirmDialogProps = {
   open: boolean;
@@ -22,6 +23,8 @@ export default function ConfirmDialog({
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
+  useDismissable(open, onCancel);
+
   return (
     <AnimatePresence>
       {open && (
@@ -31,6 +34,8 @@ export default function ConfirmDialog({
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm px-4"
           onClick={onCancel}
+          role="dialog"
+          aria-modal="true"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 10 }}

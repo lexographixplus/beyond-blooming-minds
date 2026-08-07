@@ -60,4 +60,4 @@ export type OrderSubmission = {
   created_at?: string;
 };
 
-export type TabKey = 'content' | 'books' | 'blogs' | 'contact' | 'orders';
+export type TabKey = 'overview' | 'content' | 'books' | 'blogs' | 'contact' | 'orders';

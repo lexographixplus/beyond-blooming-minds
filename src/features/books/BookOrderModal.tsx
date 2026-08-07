@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { CheckCircle2, X } from 'lucide-react';
+import { AlertCircle, CheckCircle2, X } from 'lucide-react';
 import { submitOrderForm } from '../../lib/supabase';
+import { useDismissable } from '../../hooks/useDismissable';
 
 type BookOrderModalProps = {
   isOpen: boolean;
@@ -14,20 +15,25 @@ export default function BookOrderModal({ isOpen, onClose, book }: BookOrderModal
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', quantity: 1, notes: '' });
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('');
+
+  useDismissable(isOpen, onClose);
 
   useEffect(() => {
     if (!isOpen) {
       setSuccess(false);
       setSubmitting(false);
+      setError('');
       setFormData({ name: '', email: '', phone: '', quantity: 1, notes: '' });
     }
   }, [isOpen]);
 
-  if (!book) return null;
-
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
+    if (!book) return;
+
     setSubmitting(true);
+    setError('');
     try {
       await submitOrderForm({
         ...formData,
@@ -36,9 +42,9 @@ export default function BookOrderModal({ isOpen, onClose, book }: BookOrderModal
         price: book.price,
       });
       setSuccess(true);
-    } catch (error) {
-      console.error('Error submitting order form', error);
-      alert('There was a problem sending your order request. Please try again.');
+    } catch (submitError) {
+      console.error('Error submitting order form', submitError);
+      setError('We could not send your order request just now. Please try again, or reach us on WhatsApp.');
     } finally {
       setSubmitting(false);
     }
@@ -53,13 +59,16 @@ export default function BookOrderModal({ isOpen, onClose, book }: BookOrderModal
 
   return (
     <AnimatePresence>
-      {isOpen && (
+      {isOpen && book && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[80] bg-black/60 backdrop-blur-sm px-4 py-6 overflow-y-auto"
+          className="fixed inset-0 z-[80] overflow-y-auto bg-black/60 px-4 py-6 backdrop-blur-sm"
           onClick={onClose}
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Order ${book.title}`}
         >
           <motion.div
             initial={{ opacity: 0, y: 24, scale: 0.98 }}
@@ -73,7 +82,7 @@ export default function BookOrderModal({ isOpen, onClose, book }: BookOrderModal
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.15em] text-primary-600">Order form</p>
                 <h3 className="mt-2 text-2xl font-bold text-gray-900">{book.title}</h3>
-                <p className="mt-1 text-sm text-gray-500">{book.price}</p>
+                <p className="mt-1 text-sm text-gray-500">{book.price || 'Enquire for price'}</p>
               </div>
               <button type="button" onClick={onClose} className="rounded-xl p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-900" aria-label="Close">
                 <X size={20} />
@@ -94,6 +103,12 @@ export default function BookOrderModal({ isOpen, onClose, book }: BookOrderModal
                 </motion.div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-5">
+                  {error && (
+                    <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                      <AlertCircle size={18} className="mt-0.5 shrink-0" />
+                      <p>{error}</p>
+                    </div>
+                  )}
                   <div className="grid gap-5 md:grid-cols-2">
                     <div>
                       <label className="mb-2 block text-sm font-medium text-gray-700">Your name</label>

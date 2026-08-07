@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
 import { defaultBlogIntro } from '../../lib/siteContent';
 import { subscribeBlogPosts } from '../../lib/supabase';
+import { formatDate, stripHtml } from '../../lib/utils';
 import type { BlogPost } from '../../types';
 
 export default function BlogPreview() {
@@ -65,12 +66,10 @@ export default function BlogPreview() {
                     </p>
                     <h3 className="mt-3 text-lg font-bold text-gray-900 group-hover:text-primary-700 transition-colors">{post.title}</h3>
                     <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-gray-500">
-                      {post.excerpt || post.content}
+                      {post.excerpt || stripHtml(post.content || '')}
                     </p>
                     <div className="mt-4 flex items-center justify-between">
-                      <p className="text-xs text-gray-400">
-                        {post.created_at ? new Date(post.created_at).toLocaleDateString() : 'Draft'}
-                      </p>
+                      <p className="text-xs text-gray-400">{formatDate(post.created_at, 'short')}</p>
                       <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary-600 group-hover:gap-2 transition-all">
                         Read <ArrowRight size={12} />
                       </span>

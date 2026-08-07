@@ -27,6 +27,8 @@
 
 html {
   scroll-behavior: smooth;
+  /* Keeps in-page anchors clear of the fixed navbar. */
+  scroll-padding-top: 5.5rem;
 }
 
 body {
@@ -40,6 +42,15 @@ h1, h2, h3, h4, h5, h6 {
 *:focus-visible {
   outline: 2px solid var(--color-primary-400);
   outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Slimmer, less intrusive scrollbar on desktop. */
+@media (pointer: fine) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-gray-300) transparent;
+  }
 }
 
 @keyframes spin-slow {
@@ -48,4 +59,31 @@ h1, h2, h3, h4, h5, h6 {
 
 .animate-spin-slow {
   animation: spin-slow 1.4s linear infinite;
+}
+
+/* Slow halo used by the floating WhatsApp launcher. */
+@keyframes ping-slow {
+  0%   { transform: scale(1);    opacity: 0.6; }
+  70%  { transform: scale(1.55); opacity: 0; }
+  100% { transform: scale(1.55); opacity: 0; }
+}
+
+.animate-ping-slow {
+  animation: ping-slow 2.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Respect the OS "reduce motion" preference. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

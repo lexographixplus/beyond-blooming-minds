@@ -2,21 +2,11 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { ArrowLeft, ArrowRight, CalendarDays, Clock, PenSquare, Search, Tag } from 'lucide-react';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import SiteLayout from '../components/SiteLayout';
 import { subscribeBlogPosts } from '../lib/supabase';
 import { defaultBlogIntro } from '../lib/siteContent';
+import { estimateReadTime, formatDate, stripHtml } from '../lib/utils';
 import type { BlogPost } from '../types';
-
-function estimateReadTime(html: string) {
-  const text = html.replace(/<[^>]*>/g, '');
-  const words = text.split(/\s+/).filter(Boolean).length;
-  return Math.max(1, Math.round(words / 200));
-}
-
-function stripHtml(html: string) {
-  return html.replace(/<[^>]*>/g, '');
-}
 
 export default function BlogPage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -53,10 +43,8 @@ export default function BlogPage() {
   const [featured, ...rest] = filtered;
 
   return (
-    <div className="min-h-screen bg-white">
-      <Navbar />
-      <main className="pt-16 lg:pt-[72px]">
-        {/* Hero */}
+    <SiteLayout>
+      {/* Hero */}
         <section className="relative overflow-hidden bg-gradient-to-br from-primary-950 via-primary-900 to-primary-950 px-4 pt-32 pb-20 sm:px-6 lg:px-8 lg:pt-40 lg:pb-28">
           <div className="pointer-events-none absolute inset-0">
             <div className="absolute -top-24 right-0 h-[420px] w-[420px] rounded-full bg-primary-600/15 blur-[120px]" />
@@ -168,11 +156,7 @@ export default function BlogPage() {
                             <Tag size={12} />
                             {featured.category || 'Reflection'}
                           </span>
-                          <span className="text-xs text-gray-400">
-                            {featured.created_at
-                              ? new Date(featured.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
-                              : 'Draft'}
-                          </span>
+                          <span className="text-xs text-gray-400">{formatDate(featured.created_at)}</span>
                         </div>
                         <h2 className="mt-4 text-2xl font-bold tracking-tight text-gray-900 group-hover:text-primary-700 transition-colors sm:text-3xl">
                           {featured.title}
@@ -240,9 +224,7 @@ export default function BlogPage() {
                             <div className="mt-5 flex items-center justify-between border-t border-gray-50 pt-4">
                               <span className="inline-flex items-center gap-1.5 text-xs text-gray-400">
                                 <CalendarDays size={14} />
-                                {post.created_at
-                                  ? new Date(post.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
-                                  : 'Draft'}
+                                {formatDate(post.created_at, 'short')}
                               </span>
                               <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary-600 group-hover:gap-2 transition-all">
                                 Read <ArrowRight size={12} />
@@ -257,9 +239,7 @@ export default function BlogPage() {
               </>
             )}
           </div>
-        </section>
-      </main>
-      <Footer />
-    </div>
+      </section>
+    </SiteLayout>
   );
 }

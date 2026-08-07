@@ -19,7 +19,7 @@ export default function BookCard({ book, index = 0, onOrder }: BookCardProps) {
     >
       <div className="relative h-72 bg-gradient-to-br from-gray-50 to-white p-6">
         <div className="absolute right-4 top-4 rounded-lg bg-white/90 px-3 py-1 text-xs font-semibold text-gray-700 shadow-sm backdrop-blur-sm">
-          {book.price || 'Available now'}
+          {book.status || 'Available now'}
         </div>
         {book.image_url ? (
           <img
@@ -42,7 +42,7 @@ export default function BookCard({ book, index = 0, onOrder }: BookCardProps) {
         <div className="flex flex-wrap items-center gap-3 pt-1">
           <span className="inline-flex items-center gap-2 rounded-lg bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
             <BadgeDollarSign size={14} />
-            {book.price}
+            {book.price || 'Enquire for price'}
           </span>
           <button
             type="button"

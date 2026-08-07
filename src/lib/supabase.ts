@@ -25,11 +25,14 @@ export const getSession = () => supabase.auth.getSession();
 // ── CMS Content ──
 
 export const getContent = async (): Promise<ContentType | null> => {
-  const { data } = await supabase
+  // maybeSingle() so a fresh database with no `main` row resolves to null
+  // instead of raising a 406 on every page load.
+  const { data, error } = await supabase
     .from('cms_content')
     .select('*')
     .eq('id', 'main')
-    .single();
+    .maybeSingle();
+  if (error) console.error('Failed to load site content', error);
   return data;
 };
 
