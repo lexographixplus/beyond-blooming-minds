@@ -5,7 +5,8 @@ import { defineConfig } from 'vite';
 
 export default defineConfig(() => {
   return {
-    base: '/beyond-blooming-minds/',
+    // The site is served from the root of its custom apex domain.
+    base: '/',
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
