@@ -4,7 +4,7 @@ import { motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
 import { defaultBlogIntro } from '../../lib/siteContent';
 import { subscribeBlogPosts } from '../../lib/supabase';
-import { formatDate, stripHtml } from '../../lib/utils';
+import { formatDate, getBlogPostPath, stripHtml } from '../../lib/utils';
 import type { BlogPost } from '../../types';
 
 export default function BlogPreview() {
@@ -47,7 +47,7 @@ export default function BlogPreview() {
             </div>
           ) : (
             featured.map((post, index) => (
-              <Link key={post.id} to={`/blog/${post.slug || post.id}`}>
+              <Link key={post.id} to={getBlogPostPath(post)}>
                 <motion.article
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}

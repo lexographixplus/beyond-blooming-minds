@@ -67,12 +67,16 @@ create policy "Auth manage books" on books for all using (auth.role() = 'authent
 create table if not exists blog_posts (
   id uuid primary key default gen_random_uuid(),
   title text not null,
+  slug text,
   category text default 'Reflection',
   excerpt text,
   content text,
   image_url text,
   created_at timestamptz default now()
 );
+
+-- Keep existing installations in sync with the public blog routes.
+alter table blog_posts add column if not exists slug text;
 
 alter table blog_posts enable row level security;
 create policy "Public read blog" on blog_posts for select using (true);

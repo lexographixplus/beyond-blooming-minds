@@ -72,6 +72,51 @@ h1, h2, h3, h4, h5, h6 {
   animation: ping-slow 2.6s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
+/* Quill's rich-text classes need a small public-site reset. */
+.blog-rich-content .ql-ui {
+  display: none;
+}
+
+.blog-rich-content .ql-align-center {
+  text-align: center;
+}
+
+.blog-rich-content .ql-align-right {
+  text-align: right;
+}
+
+.blog-rich-content .ql-align-justify {
+  text-align: justify;
+}
+
+.blog-rich-content ol > li[data-list='bullet'] {
+  list-style-type: disc;
+}
+
+.blog-rich-content ol > li[data-list='ordered'] {
+  list-style-type: decimal;
+}
+
+.blog-rich-content .ql-size-small {
+  font-size: 0.875em;
+}
+
+.blog-rich-content .ql-size-large {
+  font-size: 1.5em;
+  line-height: 1.25;
+}
+
+.blog-rich-content .ql-size-huge {
+  font-size: 2.25em;
+  line-height: 1.15;
+}
+
+.blog-rich-content a,
+.blog-rich-content p,
+.blog-rich-content li {
+  overflow-wrap: anywhere;
+}
+
 /* Respect the OS "reduce motion" preference. */
 @media (prefers-reduced-motion: reduce) {
   html {

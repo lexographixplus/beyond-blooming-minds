@@ -5,7 +5,7 @@ import { ArrowLeft, ArrowRight, CalendarDays, Clock, PenSquare, Search, Tag } fr
 import SiteLayout from '../components/SiteLayout';
 import { subscribeBlogPosts } from '../lib/supabase';
 import { defaultBlogIntro } from '../lib/siteContent';
-import { estimateReadTime, formatDate, stripHtml } from '../lib/utils';
+import { estimateReadTime, formatDate, getBlogPostPath, stripHtml } from '../lib/utils';
 import type { BlogPost } from '../types';
 
 export default function BlogPage() {
@@ -134,7 +134,7 @@ export default function BlogPage() {
                 {featured && (
                   <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
                     <Link
-                      to={`/blog/${featured.slug || featured.id}`}
+                      to={getBlogPostPath(featured)}
                       className="group grid gap-0 rounded-3xl border border-gray-100 bg-white shadow-sm transition-all hover:border-primary-200 hover:shadow-lg md:grid-cols-2"
                     >
                       {featured.image_url ? (
@@ -190,7 +190,7 @@ export default function BlogPage() {
                         transition={{ delay: index * 0.05 }}
                       >
                         <Link
-                          to={`/blog/${post.slug || post.id}`}
+                          to={getBlogPostPath(post)}
                           className="group flex h-full flex-col rounded-2xl border border-gray-100 bg-white shadow-sm transition-all hover:border-primary-200 hover:shadow-md"
                         >
                           {post.image_url ? (

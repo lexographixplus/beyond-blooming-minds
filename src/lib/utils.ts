@@ -89,6 +89,16 @@ export function toSlug(title: string) {
     .replace(/-+/g, '-');
 }
 
+/** Stable public identifier for a blog post, with a title-based fallback. */
+export function getBlogPostSlug(post: { id: string; title: string; slug?: string }) {
+  return post.slug?.trim() || toSlug(post.title) || post.id;
+}
+
+/** Public route used by cards, the admin preview, and related posts. */
+export function getBlogPostPath(post: { id: string; title: string; slug?: string }) {
+  return `/blog/${encodeURIComponent(getBlogPostSlug(post))}`;
+}
+
 /**
  * Normalise a phone number for wa.me links: digits only, no leading +.
  *

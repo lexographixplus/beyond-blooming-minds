@@ -4,7 +4,7 @@ import { motion } from 'motion/react';
 import { ArrowLeft, CalendarDays, Clock, Tag } from 'lucide-react';
 import SiteLayout from '../components/SiteLayout';
 import { getBlogPosts } from '../lib/supabase';
-import { estimateReadTime, formatDate } from '../lib/utils';
+import { estimateReadTime, formatDate, getBlogPostPath, getBlogPostSlug, stripHtml } from '../lib/utils';
 import type { BlogPost } from '../types';
 
 export default function BlogPostPage() {
@@ -14,9 +14,19 @@ export default function BlogPostPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let active = true;
+    setLoading(true);
+
     getBlogPosts().then((posts) => {
-      const found = posts.find(
-        (p) => (p.slug || p.id) === slug,
+      if (!active) return;
+      let decodedSlug = slug || '';
+      try {
+        decodedSlug = decodeURIComponent(decodedSlug);
+      } catch {
+        // Keep the raw route value when a malformed URL is requested.
+      }
+      const found = posts.find((p) =>
+        p.id === decodedSlug || getBlogPostSlug(p) === decodedSlug,
       );
       setPost(found ?? null);
       if (found) {
@@ -29,6 +39,10 @@ export default function BlogPostPage() {
       }
       setLoading(false);
     });
+
+    return () => {
+      active = false;
+    };
   }, [slug]);
 
   if (loading) {
@@ -64,14 +78,14 @@ export default function BlogPostPage() {
   return (
     <SiteLayout>
       {/* Hero */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-primary-950 via-primary-900 to-primary-950 px-4 pt-28 pb-16 sm:px-6 lg:px-8 lg:pt-36 lg:pb-24">
+        <section className="relative isolate overflow-hidden bg-gradient-to-br from-primary-950 via-primary-900 to-primary-950 px-4 pt-28 pb-20 sm:px-6 lg:px-8 lg:pt-36 lg:pb-28">
           <div className="pointer-events-none absolute inset-0">
             <div className="absolute -top-24 right-0 h-[420px] w-[420px] rounded-full bg-primary-600/15 blur-[120px]" />
             <div className="absolute -bottom-20 left-0 h-[360px] w-[360px] rounded-full bg-accent-500/10 blur-[100px]" />
           </div>
           <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:48px_48px]" />
 
-          <div className="relative mx-auto max-w-3xl">
+          <div className="relative mx-auto max-w-4xl">
             <motion.div initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}>
               <Link to="/blog" className="inline-flex items-center gap-2 text-sm font-medium text-white/60 transition-colors hover:text-white">
                 <ArrowLeft size={16} />
@@ -94,7 +108,7 @@ export default function BlogPostPage() {
                   {readTime} min read
                 </span>
               </div>
-              <h1 className="mt-5 text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl lg:text-5xl">
+              <h1 className="mt-5 max-w-4xl text-4xl font-bold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-6xl">
                 {post.title}
               </h1>
               {post.excerpt && (
@@ -106,38 +120,50 @@ export default function BlogPostPage() {
 
         {/* Featured image */}
         {post.image_url && (
-          <div className="mx-auto -mt-8 max-w-4xl px-4 sm:px-6 lg:px-8">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}>
-              <img
-                src={post.image_url}
-                alt={post.title}
-                className="w-full rounded-2xl object-cover shadow-xl"
-                style={{ maxHeight: '480px' }}
-              />
-            </motion.div>
-          </div>
+          <section className="bg-gray-50 px-4 pb-2 sm:px-6 lg:px-8">
+            <div className="relative z-10 mx-auto -mt-10 max-w-5xl">
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }} className="overflow-hidden rounded-[1.75rem] border border-white/80 bg-gray-100 shadow-2xl ring-1 ring-gray-900/5">
+                <img
+                  src={post.image_url}
+                  alt={post.title}
+                  className="aspect-[16/9] w-full object-cover"
+                />
+              </motion.div>
+            </div>
+          </section>
         )}
 
         {/* Article body */}
-        <article className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="prose prose-lg prose-gray max-w-none break-words
-              prose-headings:font-bold prose-headings:tracking-tight
-              prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
-              prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
-              prose-p:leading-relaxed prose-p:text-gray-600
-              prose-a:text-primary-600 prose-a:no-underline hover:prose-a:underline
-              prose-img:rounded-xl prose-img:shadow-md prose-img:max-w-full prose-img:h-auto
-              prose-blockquote:border-primary-400 prose-blockquote:bg-primary-50/50 prose-blockquote:rounded-r-xl prose-blockquote:py-1 prose-blockquote:px-6
-              prose-strong:text-gray-900
-              prose-ul:text-gray-600 prose-ol:text-gray-600
-              [&_iframe]:max-w-full [&_pre]:overflow-x-auto"
-            dangerouslySetInnerHTML={{ __html: post.content || '' }}
-          />
-        </article>
+        <section className="bg-gray-50 px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
+          <article className="mx-auto max-w-4xl rounded-[1.75rem] border border-gray-100 bg-white px-6 py-9 shadow-sm sm:px-10 sm:py-12 lg:px-16 lg:py-14">
+            <div className="mb-9 flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 pb-6">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary-600">Beyond Blooming Minds</p>
+              <p className="text-sm text-gray-400">{readTime} min read</p>
+            </div>
+            {post.content?.trim() ? (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="blog-rich-content prose prose-lg prose-gray max-w-none break-words
+                  prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-gray-900
+                  prose-h2:mt-12 prose-h2:mb-5 prose-h2:text-2xl
+                  prose-h3:mt-9 prose-h3:mb-3 prose-h3:text-xl
+                  prose-p:leading-relaxed prose-p:text-gray-600
+                  prose-a:text-primary-600 prose-a:font-medium prose-a:no-underline hover:prose-a:underline
+                  prose-img:my-8 prose-img:rounded-2xl prose-img:shadow-md prose-img:max-w-full prose-img:h-auto
+                  prose-blockquote:border-primary-400 prose-blockquote:bg-primary-50/60 prose-blockquote:rounded-r-xl prose-blockquote:py-1 prose-blockquote:px-6
+                  prose-strong:text-gray-900 prose-ul:text-gray-600 prose-ol:text-gray-600
+                  [&_iframe]:aspect-video [&_iframe]:h-auto [&_iframe]:w-full [&_iframe]:rounded-2xl [&_pre]:overflow-x-auto"
+                dangerouslySetInnerHTML={{ __html: post.content }}
+              />
+            ) : (
+              <div className="rounded-2xl bg-gray-50 px-6 py-10 text-center text-gray-500">
+                This article is still being prepared. Please check back soon.
+              </div>
+            )}
+          </article>
+        </section>
 
         {/* Related posts */}
         {related.length > 0 && (
@@ -148,7 +174,7 @@ export default function BlogPostPage() {
                 {related.map((r) => (
                   <Link
                     key={r.id}
-                    to={`/blog/${r.slug || r.id}`}
+                    to={getBlogPostPath(r)}
                     className="group rounded-2xl border border-gray-100 bg-white shadow-sm transition-all hover:border-primary-200 hover:shadow-md"
                   >
                     {r.image_url && (
@@ -159,7 +185,7 @@ export default function BlogPostPage() {
                     <div className="p-5">
                       <p className="text-xs font-semibold uppercase tracking-[0.15em] text-primary-600">{r.category || 'Reflection'}</p>
                       <h3 className="mt-2 text-base font-bold text-gray-900 group-hover:text-primary-700">{r.title}</h3>
-                      <p className="mt-2 line-clamp-2 text-sm text-gray-500">{r.excerpt}</p>
+                      <p className="mt-2 line-clamp-2 text-sm text-gray-500">{r.excerpt || stripHtml(r.content || '')}</p>
                     </div>
                   </Link>
                 ))}

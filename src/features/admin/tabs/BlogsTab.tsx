@@ -5,7 +5,7 @@ import 'react-quill-new/dist/quill.snow.css';
 import { Edit3, ExternalLink, Image as ImageIcon, Loader2, PenSquare, Trash2, Upload, X } from 'lucide-react';
 import { EmptyState, Panel, SearchInput } from '../components/primitives';
 import { btnPrimary, btnSecondary, field, fieldHint, fieldLabel, iconBtn } from '../ui';
-import { cn, estimateReadTime, formatDateTime, toSlug } from '../../../lib/utils';
+import { cn, estimateReadTime, formatDateTime, getBlogPostPath, toSlug } from '../../../lib/utils';
 import type { BlogPost } from '../../../types';
 
 export type BlogFormState = {
@@ -305,7 +305,7 @@ export default function BlogsTab({
 
                 <div className="flex shrink-0 gap-1">
                   <a
-                    href={`${import.meta.env.BASE_URL}blog/${post.slug || post.id}`}
+                    href={`${import.meta.env.BASE_URL}${getBlogPostPath(post).slice(1)}`}
                     target="_blank"
                     rel="noreferrer"
                     className={iconBtn}
