@@ -17,18 +17,22 @@ export default function BookCard({ book, index = 0, onOrder }: BookCardProps) {
       transition={{ delay: index * 0.1 }}
       className="group overflow-hidden rounded-2xl bg-white border border-gray-100 hover:border-primary-200 hover:shadow-xl hover:shadow-primary-500/5 transition-all duration-300"
     >
-      <div className="relative h-72 bg-gradient-to-br from-gray-50 to-white p-6">
-        <div className="absolute right-4 top-4 rounded-lg bg-white/90 px-3 py-1 text-xs font-semibold text-gray-700 shadow-sm backdrop-blur-sm">
+      <div className="flex h-72 flex-col bg-gradient-to-br from-gray-50 to-white p-6">
+        <div className="flex min-h-7 shrink-0 justify-end">
+          <div className="rounded-lg bg-white/90 px-3 py-1 text-xs font-semibold text-gray-700 shadow-sm backdrop-blur-sm">
           {book.status || 'Available now'}
+          </div>
         </div>
         {book.image_url ? (
-          <img
-            src={book.image_url}
-            alt={book.title}
-            className="mx-auto h-full max-h-64 w-full max-w-sm rounded-lg object-contain drop-shadow-xl transition-transform duration-500 group-hover:scale-105"
-          />
+          <div className="min-h-0 flex-1 pt-3">
+            <img
+              src={book.image_url}
+              alt={book.title}
+              className="mx-auto h-full w-full max-w-sm rounded-lg object-contain drop-shadow-xl transition-transform duration-500 group-hover:scale-105"
+            />
+          </div>
         ) : (
-          <div className="flex h-full items-center justify-center rounded-xl border border-dashed border-gray-200 bg-white text-gray-300">
+          <div className="flex min-h-0 flex-1 items-center justify-center rounded-xl border border-dashed border-gray-200 bg-white text-gray-300">
             <Sparkles size={32} />
           </div>
         )}

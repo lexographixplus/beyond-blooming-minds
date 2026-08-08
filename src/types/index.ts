@@ -8,6 +8,8 @@ export type ContentType = {
   email: string;
   whatsapp: string;
   instagram: string;
+  facebook: string;
+  tiktok: string;
 };
 
 export type Book = {

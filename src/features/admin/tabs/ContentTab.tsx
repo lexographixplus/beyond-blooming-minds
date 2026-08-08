@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
-import { AtSign, Check, Instagram, Loader2, MessageCircle, RotateCcw } from 'lucide-react';
+import { AtSign, Check, Facebook, Instagram, Loader2, MessageCircle, Music2, RotateCcw } from 'lucide-react';
 import { Panel } from '../components/primitives';
 import { btnPrimary, btnSecondary, field, fieldHint, fieldLabel } from '../ui';
 import type { ContentType } from '../../../types';
@@ -63,6 +63,20 @@ const contactFields: (FieldSpec & { icon: typeof AtSign; hint: string })[] = [
     name: 'instagram',
     label: 'Instagram handle',
     icon: Instagram,
+    placeholder: '@beyondbloomingminds',
+    hint: 'With or without the @.',
+  },
+  {
+    name: 'facebook',
+    label: 'Facebook handle',
+    icon: Facebook,
+    placeholder: 'beyondbloomingminds',
+    hint: 'With or without the @.',
+  },
+  {
+    name: 'tiktok',
+    label: 'TikTok handle',
+    icon: Music2,
     placeholder: '@beyondbloomingminds',
     hint: 'With or without the @.',
   },
@@ -151,7 +165,7 @@ export default function ContentTab({ content, loading, onSave }: ContentTabProps
         title="Contact details"
         description="Used across the footer, contact section and WhatsApp chat button."
       >
-        <div className="grid gap-5 md:grid-cols-3">
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {contactFields.map((spec) => (
             <div key={String(spec.name)}>
               <label htmlFor={String(spec.name)} className={fieldLabel}>

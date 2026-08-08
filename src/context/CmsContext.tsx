@@ -18,6 +18,8 @@ const defaultContent: ContentType = {
   email: 'email@example.com',
   whatsapp: '+1234567890',
   instagram: '@beyondbloomingminds',
+  facebook: '',
+  tiktok: '',
 };
 
 const CmsContext = createContext<{ content: ContentType; loading: boolean }>({

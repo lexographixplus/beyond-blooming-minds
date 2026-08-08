@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import { motion } from 'motion/react';
-import { AlertCircle, CheckCircle2, Instagram, Mail, MessageCircle, Send } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Facebook, Instagram, Mail, MessageCircle, Music2, Send } from 'lucide-react';
 import { submitContactForm } from '../../lib/supabase';
 import { useCms } from '../../context/CmsContext';
-import { toWhatsAppNumber } from '../../lib/utils';
+import { toSocialLink, toWhatsAppNumber } from '../../lib/utils';
 
 export default function ContactForm() {
   const { content } = useCms();
@@ -56,11 +56,28 @@ export default function ContactForm() {
     {
       label: 'Instagram',
       value: content.instagram,
-      href: `https://instagram.com/${(content.instagram || '').replace('@', '')}`,
+      href: toSocialLink('https://instagram.com', content.instagram),
       icon: Instagram,
       accent: 'bg-accent-400/10 text-accent-500',
     },
-  ];
+    {
+      label: 'Facebook',
+      value: content.facebook,
+      href: toSocialLink('https://facebook.com', content.facebook),
+      icon: Facebook,
+      accent: 'bg-secondary-400/10 text-secondary-500',
+    },
+    {
+      label: 'TikTok',
+      value: content.tiktok,
+      href: toSocialLink('https://tiktok.com', content.tiktok, '@'),
+      icon: Music2,
+      accent: 'bg-gray-100 text-gray-800',
+    },
+  ].filter(
+    (channel) =>
+      (channel.value?.trim() && channel.href) || channel.label === 'Email' || channel.label === 'WhatsApp',
+  );
 
   return (
     <section id="contact" className="relative bg-gray-50 py-24 lg:py-32">

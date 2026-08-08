@@ -119,6 +119,14 @@ export function toWhatsAppNumber(raw?: string | null) {
   return candidates[0] ?? '';
 }
 
+/** Build a social profile URL from a handle or an already-complete URL. */
+export function toSocialLink(baseUrl: string, value?: string | null, handlePrefix = '') {
+  const profile = value?.trim() ?? '';
+  if (!profile) return '';
+  if (/^https?:\/\//i.test(profile)) return profile;
+  return `${baseUrl.replace(/\/+$/, '')}/${handlePrefix}${profile.replace(/^@/, '')}`;
+}
+
 /** Join class names, skipping falsy values. */
 export function cn(...classes: (string | false | null | undefined)[]) {
   return classes.filter(Boolean).join(' ');

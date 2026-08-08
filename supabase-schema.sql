@@ -16,8 +16,14 @@ create table if not exists cms_content (
   email text not null default '',
   whatsapp text not null default '',
   instagram text not null default '',
+  facebook text not null default '',
+  tiktok text not null default '',
   updated_at timestamptz default now()
 );
+
+-- Add new social handles when this script is applied to an existing database.
+alter table cms_content add column if not exists facebook text not null default '';
+alter table cms_content add column if not exists tiktok text not null default '';
 
 alter table cms_content enable row level security;
 create policy "Public read cms" on cms_content for select using (true);
@@ -25,7 +31,7 @@ create policy "Auth update cms" on cms_content for update using (auth.role() = '
 create policy "Auth insert cms" on cms_content for insert with check (auth.role() = 'authenticated');
 
 -- Seed the default row
-insert into cms_content (id, "heroTitle", "heroSubtitle", "aboutText", "visionText", "missionText", "founderNote", email, whatsapp, instagram)
+insert into cms_content (id, "heroTitle", "heroSubtitle", "aboutText", "visionText", "missionText", "founderNote", email, whatsapp, instagram, facebook, tiktok)
 values (
   'main',
   'Growing Minds, Hearts & Spirits',
@@ -36,7 +42,9 @@ values (
   'I started Beyond Blooming Minds because I saw how many people were struggling silently.',
   'email@example.com',
   '+1234567890',
-  '@beyondbloomingminds'
+  '@beyondbloomingminds',
+  '',
+  ''
 ) on conflict (id) do nothing;
 
 -- ════════════════════════════════════════

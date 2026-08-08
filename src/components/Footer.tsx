@@ -1,14 +1,37 @@
-import { Instagram, Mail, Phone } from 'lucide-react';
+import { Facebook, Instagram, Mail, Music2, Phone } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCms } from '../context/CmsContext';
 import { assets } from '../lib/siteContent';
-import { toWhatsAppNumber } from '../lib/utils';
+import { toSocialLink, toWhatsAppNumber } from '../lib/utils';
 
 export default function Footer() {
   const { content } = useCms();
 
   // The contact field may hold more than one number; link the first.
   const phoneNumber = toWhatsAppNumber(content.whatsapp);
+  const socialLinks = [
+    {
+      label: 'Instagram',
+      value: content.instagram,
+      href: toSocialLink('https://instagram.com', content.instagram),
+      icon: Instagram,
+      color: 'text-accent-400',
+    },
+    {
+      label: 'Facebook',
+      value: content.facebook,
+      href: toSocialLink('https://facebook.com', content.facebook),
+      icon: Facebook,
+      color: 'text-secondary-400',
+    },
+    {
+      label: 'TikTok',
+      value: content.tiktok,
+      href: toSocialLink('https://tiktok.com', content.tiktok, '@'),
+      icon: Music2,
+      color: 'text-white',
+    },
+  ].filter((social) => social.value?.trim() && social.href);
 
   return (
     <footer className="border-t border-gray-800/50 bg-gray-950 text-gray-300">
@@ -63,11 +86,13 @@ export default function Footer() {
                   <Phone size={16} className="text-primary-400" /><span>{content.whatsapp}</span>
                 </a>
               </li>
-              <li>
-                <a href={`https://instagram.com/${(content.instagram || '').replace('@', '')}`} target="_blank" rel="noreferrer" className="flex items-center gap-3 transition-colors hover:text-white">
-                  <Instagram size={16} className="text-accent-400" /><span>{content.instagram}</span>
-                </a>
-              </li>
+              {socialLinks.map((social) => (
+                <li key={social.label}>
+                  <a href={social.href} target="_blank" rel="noreferrer" className="flex items-center gap-3 transition-colors hover:text-white">
+                    <social.icon size={16} className={social.color} /><span>{social.value}</span>
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
