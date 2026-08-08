@@ -305,7 +305,7 @@ export default function BlogsTab({
 
                 <div className="flex shrink-0 gap-1">
                   <a
-                    href={`${import.meta.env.BASE_URL}#/blog/${post.slug || post.id}`}
+                    href={`${import.meta.env.BASE_URL}blog/${post.slug || post.id}`}
                     target="_blank"
                     rel="noreferrer"
                     className={iconBtn}

@@ -34,6 +34,10 @@ jobs:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
+      # GitHub Pages serves this file for unknown paths. Keeping the built
+      # app here lets BrowserRouter handle direct visits such as /admin.
+      - run: cp dist/index.html dist/404.html
+
       - uses: actions/configure-pages@v4
       - uses: actions/upload-pages-artifact@v3
         with:

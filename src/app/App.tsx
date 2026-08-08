@@ -1,4 +1,4 @@
-import { HashRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
 import SiteLayout from '../components/SiteLayout';
 import ScrollToTop from '../components/ScrollToTop';
@@ -56,7 +56,7 @@ function RouteFallback() {
 export default function App() {
   return (
     <CmsProvider>
-      <HashRouter>
+      <BrowserRouter>
         <ScrollToTop />
         <Suspense fallback={<RouteFallback />}>
           <Routes>
@@ -70,7 +70,7 @@ export default function App() {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
-      </HashRouter>
+      </BrowserRouter>
     </CmsProvider>
   );
 }
