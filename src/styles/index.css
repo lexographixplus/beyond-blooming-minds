@@ -111,9 +111,25 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.15;
 }
 
-.blog-rich-content a,
+.blog-rich-content,
 .blog-rich-content p,
-.blog-rich-content li {
+.blog-rich-content li,
+.blog-rich-content blockquote {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: auto;
+}
+
+.blog-rich-content * {
+  max-width: 100%;
+}
+
+/* URLs and other genuinely unbroken strings must still stay inside the reading column. */
+.blog-rich-content a,
+.blog-rich-content pre,
+.blog-rich-content code {
   overflow-wrap: anywhere;
 }
 
