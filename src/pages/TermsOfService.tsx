@@ -2,8 +2,13 @@ import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { ArrowLeft } from 'lucide-react';
 import SiteLayout from '../components/SiteLayout';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 
 export default function TermsOfService() {
+  useDocumentMeta({
+    title: 'Terms of Service',
+    description: 'The terms that apply when you use the Beyond Blooming Minds website and services.',
+  });
   return (
     <SiteLayout>
       <section className="relative overflow-hidden bg-gradient-to-br from-primary-950 via-primary-900 to-primary-950 px-4 pt-28 pb-16 sm:px-6 lg:px-8 lg:pt-36 lg:pb-24">

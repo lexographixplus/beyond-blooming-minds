@@ -15,6 +15,7 @@ import {
   Tag,
 } from 'lucide-react';
 import SiteLayout from '../components/SiteLayout';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 import { getBlogPosts } from '../lib/supabase';
 import { estimateReadTime, formatDate, getBlogPostPath, getBlogPostSlug, stripHtml } from '../lib/utils';
 import type { BlogPost } from '../types';
@@ -36,6 +37,13 @@ export default function BlogPostPage() {
   const [related, setRelated] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+
+  // Called before the loading and not-found returns so the hook order stays stable.
+  useDocumentMeta({
+    title: post?.title,
+    description: post?.excerpt?.trim() || (post ? stripHtml(post.content || '').slice(0, 155) : undefined),
+    image: post?.image_url,
+  });
 
   useEffect(() => {
     let active = true;

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { ArrowLeft, BadgeDollarSign, CalendarClock, Sparkles } from 'lucide-react';
 import SiteLayout from '../components/SiteLayout';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 import BookOrderModal from '../features/books/BookOrderModal';
 import { subscribeBooks } from '../lib/supabase';
 import type { Book } from '../types';
@@ -10,6 +11,10 @@ import type { Book } from '../types';
 const isUpcoming = (book: Book) => (book.status || '').toLowerCase().includes('upcoming');
 
 export default function BooksPage() {
+  useDocumentMeta({
+    title: 'Books',
+    description: 'Books on psychoeducation, emotional wellbeing and holistic growth from Beyond Blooming Minds.',
+  });
   const [books, setBooks] = useState<Book[]>([]);
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
 

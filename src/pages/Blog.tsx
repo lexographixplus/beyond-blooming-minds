@@ -3,12 +3,17 @@ import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { ArrowLeft, ArrowRight, CalendarDays, Clock, PenSquare, Search, Tag } from 'lucide-react';
 import SiteLayout from '../components/SiteLayout';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 import { subscribeBlogPosts } from '../lib/supabase';
 import { defaultBlogIntro } from '../lib/siteContent';
 import { estimateReadTime, formatDate, getBlogPostPath, stripHtml } from '../lib/utils';
 import type { BlogPost } from '../types';
 
 export default function BlogPage() {
+  useDocumentMeta({
+    title: 'Blog',
+    description: 'Psychoeducation articles on emotional development, memory, boundaries and wellbeing.',
+  });
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState<string | null>(null);

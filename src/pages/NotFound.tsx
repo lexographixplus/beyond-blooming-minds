@@ -2,8 +2,13 @@ import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { ArrowLeft, BookOpen, PenSquare } from 'lucide-react';
 import SiteLayout from '../components/SiteLayout';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 
 export default function NotFound() {
+  useDocumentMeta({
+    title: 'Page not found',
+    description: 'That page could not be found. Explore our books, blog and psychoeducation programmes instead.',
+  });
   return (
     <SiteLayout>
       <section className="relative overflow-hidden bg-gradient-to-br from-primary-950 via-primary-900 to-primary-950 px-4 py-28 sm:px-6 lg:px-8 lg:py-40">

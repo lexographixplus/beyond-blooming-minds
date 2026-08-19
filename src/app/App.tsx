@@ -11,6 +11,7 @@ import BooksPreview from '../features/books/BooksPreview';
 import BlogPreview from '../features/blog/BlogPreview';
 import Founder from '../features/home/Founder';
 import ContactForm from '../features/contact/ContactForm';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 import { CmsProvider } from '../context/CmsContext';
 import { assets } from '../lib/siteContent';
 
@@ -23,6 +24,8 @@ const TermsOfService = lazy(() => import('../pages/TermsOfService'));
 const NotFound = lazy(() => import('../pages/NotFound'));
 
 function PublicHome() {
+  useDocumentMeta({});
+
   return (
     <SiteLayout offsetNavbar={false}>
       <Hero />
