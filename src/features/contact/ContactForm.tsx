@@ -4,7 +4,7 @@ import { motion } from 'motion/react';
 import { AlertCircle, CheckCircle2, Facebook, Instagram, Mail, MessageCircle, Music2, Send } from 'lucide-react';
 import { submitContactForm } from '../../lib/supabase';
 import { useCms } from '../../context/CmsContext';
-import { toSocialLink, toWhatsAppNumber } from '../../lib/utils';
+import { toSocialHandle, toSocialLink, toWhatsAppNumber } from '../../lib/utils';
 
 export default function ContactForm() {
   const { content } = useCms();
@@ -42,6 +42,7 @@ export default function ContactForm() {
     {
       label: 'Email',
       value: content.email,
+      display: content.email,
       href: `mailto:${content.email}`,
       icon: Mail,
       accent: 'bg-primary-50 text-primary-600',
@@ -49,6 +50,7 @@ export default function ContactForm() {
     {
       label: 'WhatsApp',
       value: content.whatsapp,
+      display: content.whatsapp?.trim(),
       href: whatsappNumber ? `https://wa.me/${whatsappNumber}` : `tel:${content.whatsapp}`,
       icon: MessageCircle,
       accent: 'bg-emerald-50 text-emerald-600',
@@ -56,6 +58,7 @@ export default function ContactForm() {
     {
       label: 'Instagram',
       value: content.instagram,
+      display: toSocialHandle(content.instagram),
       href: toSocialLink('https://instagram.com', content.instagram),
       icon: Instagram,
       accent: 'bg-accent-400/10 text-accent-500',
@@ -63,6 +66,7 @@ export default function ContactForm() {
     {
       label: 'Facebook',
       value: content.facebook,
+      display: toSocialHandle(content.facebook, ''),
       href: toSocialLink('https://facebook.com', content.facebook),
       icon: Facebook,
       accent: 'bg-secondary-400/10 text-secondary-500',
@@ -70,6 +74,7 @@ export default function ContactForm() {
     {
       label: 'TikTok',
       value: content.tiktok,
+      display: toSocialHandle(content.tiktok),
       href: toSocialLink('https://tiktok.com', content.tiktok, '@'),
       icon: Music2,
       accent: 'bg-gray-100 text-gray-800',
@@ -93,9 +98,9 @@ export default function ContactForm() {
           </p>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[1.35fr_0.65fr] lg:items-start">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.35fr_0.65fr] lg:items-start">
           {/* Form card */}
-          <div className="relative overflow-hidden rounded-2xl border border-gray-100 bg-white p-8 shadow-sm md:p-10">
+          <div className="relative min-w-0 overflow-hidden rounded-2xl border border-gray-100 bg-white p-8 shadow-sm md:p-10">
             <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary-100/30 blur-3xl" />
 
             <div className="relative z-10">
@@ -125,7 +130,7 @@ export default function ContactForm() {
                     </div>
                   )}
 
-                  <div className="grid gap-6 md:grid-cols-2">
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                     <div>
                       <label htmlFor="name" className="mb-2 block text-sm font-medium text-gray-700">
                         Your Name
@@ -191,7 +196,7 @@ export default function ContactForm() {
           </div>
 
           {/* Direct channels */}
-          <div className="space-y-3">
+          <div className="min-w-0 space-y-3">
             {channels.map((channel) => (
               <a
                 key={channel.label}
@@ -209,7 +214,7 @@ export default function ContactForm() {
                   <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-gray-400">
                     {channel.label}
                   </p>
-                  <p className="truncate text-sm font-medium text-gray-800">{channel.value}</p>
+                  <p className="truncate text-sm font-medium text-gray-800">{channel.display}</p>
                 </div>
               </a>
             ))}

@@ -127,6 +127,50 @@ export function toSocialLink(baseUrl: string, value?: string | null, handlePrefi
   return `${baseUrl.replace(/\/+$/, '')}/${handlePrefix}${profile.replace(/^@/, '')}`;
 }
 
+/**
+ * Demote H1s inside authored article bodies to H2.
+ *
+ * Article content comes from the rich-text editor, where authors reach for H1 on
+ * section titles like "References". The page already renders the post title as
+ * its H1, so demote these to keep exactly one top-level heading per page for
+ * search engines and screen readers.
+ */
+export function demoteContentHeadings(html: string) {
+  return html.replace(/<(\/?)h1(\s|>)/gi, '<$1h2$2');
+}
+
+/**
+ * Readable label for a social channel.
+ *
+ * These CMS fields hold either a handle ("bloomingminds") or a full profile URL
+ * pasted from the app's share sheet. A full URL is one unbreakable string, which
+ * blows out intrinsic widths on narrow screens, so never display it raw: use the
+ * handle where the URL carries one, and a neutral label where it does not.
+ */
+export function toSocialHandle(value?: string | null, handlePrefix = '@') {
+  const profile = value?.trim() ?? '';
+  if (!profile) return '';
+
+  const withPrefix = (handle: string) => `${handlePrefix}${handle.replace(/^@/, '')}`;
+
+  if (!/^https?:\/\//i.test(profile)) return withPrefix(profile);
+
+  try {
+    const { hostname, pathname } = new URL(profile);
+    const segment = pathname.split('/').filter(Boolean).pop() ?? '';
+
+    // Share links (vm.tiktok.com/ZS9k…) and numeric Facebook profiles (profile.php)
+    // carry no readable handle, so fall back to a label rather than a code.
+    const isShareLink =
+      /^(vm|vt)\.tiktok\.com$|^fb\.me$|^l\.(facebook|instagram)\.com$/i.test(hostname) ||
+      /^profile\.php$/i.test(segment);
+
+    return isShareLink || !segment ? 'View profile' : withPrefix(decodeURIComponent(segment));
+  } catch {
+    return 'View profile';
+  }
+}
+
 /** Join class names, skipping falsy values. */
 export function cn(...classes: (string | false | null | undefined)[]) {
   return classes.filter(Boolean).join(' ');

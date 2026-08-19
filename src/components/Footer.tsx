@@ -2,7 +2,7 @@ import { Facebook, Instagram, Mail, Music2, Phone } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCms } from '../context/CmsContext';
 import { assets } from '../lib/siteContent';
-import { toSocialLink, toWhatsAppNumber } from '../lib/utils';
+import { toSocialHandle, toSocialLink, toWhatsAppNumber } from '../lib/utils';
 
 export default function Footer() {
   const { content } = useCms();
@@ -13,6 +13,7 @@ export default function Footer() {
     {
       label: 'Instagram',
       value: content.instagram,
+      display: toSocialHandle(content.instagram),
       href: toSocialLink('https://instagram.com', content.instagram),
       icon: Instagram,
       color: 'text-accent-400',
@@ -20,6 +21,7 @@ export default function Footer() {
     {
       label: 'Facebook',
       value: content.facebook,
+      display: toSocialHandle(content.facebook, ''),
       href: toSocialLink('https://facebook.com', content.facebook),
       icon: Facebook,
       color: 'text-secondary-400',
@@ -27,6 +29,7 @@ export default function Footer() {
     {
       label: 'TikTok',
       value: content.tiktok,
+      display: toSocialHandle(content.tiktok),
       href: toSocialLink('https://tiktok.com', content.tiktok, '@'),
       icon: Music2,
       color: 'text-white',
@@ -36,7 +39,7 @@ export default function Footer() {
   return (
     <footer className="border-t border-gray-800/50 bg-gray-950 text-gray-300">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
-        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-2">
             <div className="flex items-center gap-4">
               <img src={assets.logo} alt="Beyond Blooming Minds" className="h-14 w-14 rounded-xl bg-white object-cover shadow-lg" />
@@ -88,8 +91,8 @@ export default function Footer() {
               </li>
               {socialLinks.map((social) => (
                 <li key={social.label}>
-                  <a href={social.href} target="_blank" rel="noreferrer" className="flex items-center gap-3 transition-colors hover:text-white">
-                    <social.icon size={16} className={social.color} /><span>{social.value}</span>
+                  <a href={social.href} target="_blank" rel="noreferrer" className="flex min-w-0 items-center gap-3 transition-colors hover:text-white">
+                    <social.icon size={16} className={`shrink-0 ${social.color}`} /><span className="truncate">{social.display}</span>
                   </a>
                 </li>
               ))}
