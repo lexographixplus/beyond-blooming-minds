@@ -17,7 +17,7 @@ import {
 import SiteLayout from '../components/SiteLayout';
 import { useDocumentMeta } from '../hooks/useDocumentMeta';
 import { getBlogPosts } from '../lib/supabase';
-import { estimateReadTime, formatDate, getBlogPostPath, getBlogPostSlug, stripHtml } from '../lib/utils';
+import { demoteContentHeadings, estimateReadTime, formatDate, getBlogPostPath, getBlogPostSlug, stripHtml } from '../lib/utils';
 import type { BlogPost } from '../types';
 
 function getCurrentUrl() {
@@ -137,7 +137,7 @@ export default function BlogPostPage() {
   }
 
   const readTime = estimateReadTime(post.content || '');
-  const articleHtml = normaliseArticleHtml(post.content || '');
+  const articleHtml = demoteContentHeadings(normaliseArticleHtml(post.content || ''));
   const articleExcerpt = normaliseArticleHtml(post.excerpt || '');
   const shareUrl = getCurrentUrl();
   const encodedShareUrl = encodeURIComponent(shareUrl);
